@@ -102,7 +102,7 @@
     if(Drupal.settings.searchapilocation[i].radius_measure == "km")
       measure = 1000;
     else if(Drupal.settings.searchapilocation[i].radius_measure == "mi")
-      measure = 1609,344;
+      measure = 1609.344;
 
     
     // add circle

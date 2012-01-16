@@ -4,7 +4,7 @@
  * Provides location based search functionality to the Search API.
  */
 
-require_once('search_api_location.elements.inc');
+require_once 'search_api_location.elements.inc';
 
 /**
  * Implements hook_views_api().
@@ -53,8 +53,8 @@ function search_api_location_form_alter(&$form, &$form_state, $form_id) {
     $page_id = $form['form']['id']['#value'];
     $page = search_api_page_load($page_id);
 
-    // get the spatial field from the index if it exists
-    $sf =  _search_api_location_get_locationfield($page->index_id);
+    // Get the location field from the index if it exists.
+    $sf = _search_api_location_get_locationfield($page->index_id);
 
     if ($sf) {
       $spatial = _search_api_location_get_location($form['form']['keys_' . $page_id]['#default_value']);
@@ -74,19 +74,20 @@ function search_api_location_form_alter(&$form, &$form_state, $form_id) {
         '#tree' => TRUE,
       );
 
-      $form['form']['keys_' . $page_id]['#default_value'] = _search_api_location_get_keys($form['form']['keys_' . $page_id]['#default_value']);
+      $keys = _search_api_location_get_keys($form['form']['keys_' . $page_id]['#default_value']);
+      $form['form']['keys_' . $page_id]['#default_value'] = $keys;
 
       $form['#submit'][] = "search_api_location_search_api_page_search_form_submit";
 
-      //override the validate function, because we have to be ale to insert no key value
+      // Override the validate function,
+      // because we have to be able to insert no key value.
       $form['#validate'] = array("search_api_location_search_api_page_search_form_validate");
     }
   }
   elseif ($form_id == "search_api_page_admin_edit") {
 
     $page = $form_state['page'];
-    $sf =  _search_api_location_get_locationfield($page->index_id);
-
+    $sf = _search_api_location_get_locationfield($page->index_id);
 
     if ($sf) {
       $form['options']['spatial'] = array(
@@ -98,12 +99,12 @@ function search_api_location_form_alter(&$form, &$form_state, $form_id) {
   }
   elseif ($form_id == "search_api_page_admin_add" && isset($form_state['step_one'])) {
 
-    $sf =  _search_api_location_get_locationfield($form_state['step_one']['index_id']);
+    $sf = _search_api_location_get_locationfield($form_state['step_one']['index_id']);
 
-    //TODO: add default global config of spatial fields instead of empty array
+    // @todo Add global config of location fields instead of empty array.
     $spatial = array();
 
-    if  ($sf) {
+    if ($sf) {
       $form['spatial'] = array(
         '#type' => 'search_api_location_pick',
         '#default_value' => array(
@@ -128,7 +129,7 @@ function search_api_location_form_alter(&$form, &$form_state, $form_id) {
  * @see search_api_location_search_api_page_search_form_submit()
  */
 function search_api_location_search_api_page_search_form_validate(array $form, array &$form_state) {
-  //TODO : validate the lat, lng and radius value
+  // @todo Validate the lat, lng and radius value.
 }
 
 /**
@@ -141,9 +142,9 @@ function search_api_location_search_api_page_search_form_submit(array $form, arr
   $page_id = $form_state['values']['id'];
   $spatial = $form_state['values']['spatial_' . $page_id];
 
-  // append the spatial data after the keys and change the redirect
-  // maybe we should add token support and work with slashes
 
+  // Append the spatial data after the keys and change the redirect.
+  // @todo Add token support and/or work with slashes.
   $form_state['values']['keys_' . $page_id] .= "--location--" . $spatial['lat'] . "_" . $spatial['lng'] . "_" . $spatial['radius'];
   $form_state['redirect'] .= "--location--" . $spatial['lat'] . "_" . $spatial['lng'] . "_" . $spatial['radius'];
 }
@@ -157,7 +158,7 @@ function search_api_location_search_api_solr_query_alter(array &$call_args, Sear
 
   if (is_array($spatial)) {
 
-    //recalculate the radius field, because solr can only handle km
+    // Recalculate the radius field, because solr can only handle km.
     if ($spatial['radius_measure'] == "m") {
       $spatial['radius'] /= 1000;
     }
@@ -168,24 +169,24 @@ function search_api_location_search_api_solr_query_alter(array &$call_args, Sear
     // $call_args['query'] = '{!geofilt}';
     $call_args['params']['fq'][] = '{!geofilt}';
     $call_args['params']['sfield'] = "locs_" . $spatial['field'];
-    $call_args['params']['pt'] =  $spatial['lat'] . ',' . $spatial['lng'];
-    $call_args['params']['d'] =  $spatial['radius'];
+    $call_args['params']['pt'] = $spatial['lat'] . ',' . $spatial['lng'];
+    $call_args['params']['d'] = $spatial['radius'];
     $call_args['params']['sort'] = 'geodist() asc';
 
-    // change the fq facet ranges to the correct fq
+    // Change the fq facet ranges to the correct fq.
     foreach ($call_args['params']['fq'] as $key => $value) {
 
-      // if the fq starts with the sfield then replace it with a frange fq
+      // If the fq starts with the sfield then replace it with a frange fq.
       $new_field = SearchApiSolrConnection::escapeFieldName("locs_" . $spatial['field']);
 
-      if (strpos($value, $new_field) == "0" && strpos($value, $new_field) !== FALSE) {
+      if (strpos($value, $new_field) === 0) {
         $value = explode(" ", $value);
         $value[0] = explode("\"", $value[0]);
         $call_args['params']['fq'][$key] = "{!frange l=" . $value[0][1] . " u=" . $value[3] . "}geodist()";
       }
     }
 
-    // change the spatial field facet so it return distance facet ranges
+    // Change the spatial field facet so it return distance facet ranges.
     $facets = $query->getOption('search_api_facets');
 
     if (is_array($facets)) {
@@ -200,7 +201,7 @@ function search_api_location_search_api_solr_query_alter(array &$call_args, Sear
           $range = $spatial['radius'] / 5;
 
           for ($i = 0; $i < 5; $i++) {
-            $call_args['params']['facet.query'][] = "{!frange l=" . $i * $range . " u=" . ($i+1) * $range . "}geodist()";
+            $call_args['params']['facet.query'][] = "{!frange l=" . $i * $range . " u=" . ($i + 1) * $range . "}geodist()";
           }
         }
       }
@@ -214,45 +215,84 @@ function search_api_location_search_api_solr_query_alter(array &$call_args, Sear
 function search_api_location_search_api_solr_search_results_alter(&$results, $query, $response) {
 
   $locationfield = _search_api_location_get_locationfield($query->getIndex()->id);
+  $spatial = $query->getOption('spatial');
 
-  if (isset($locationfield)) {
+  if (isset($locationfield) && $spatial) {
 
     $facets = $response->__get('facet_counts');
 
     if ($facets) {
 
-      foreach ($facets->facet_queries as $query => $count) {
+      foreach ($facets->facet_queries as $facet_query => $count) {
 
-        //TODO: find better way to extract the facets and rewrite them
-        $parts = explode(" ", $query);
-        $kort = explode("=", $parts[1]);
-        $kort = round($kort[1]);
+        // @todo: find better way to extract the facets and rewrite them.
+        $parts = explode(' ', $facet_query);
+        $lower = explode('=', $parts[1]);
+        $upper = round($kort[1]);
 
-        $lang = explode("}", $parts[2]);
-        $lang = $lang[0];
-        $lang = explode("=", $lang);
-        $lang = round($lang[1]);
+        $upper = explode('}', $parts[2]);
+        $upper = $upper[0];
+        $upper = explode('=', $upper);
+        $upper = round($upper[1]);
 
-        $results['search_api_facets'][$locationfield][] = array("filter" => '"' . $kort . ' km to ' . $lang . ' km"', "count" => $count);
+        // Recalculate the radius field, because solr can only handle km.
+        if ($spatial['radius_measure'] == 'm') {
+          $lower *= 1000;
+          $upper *= 1000;
+        }
+        elseif ($spatial['radius_measure'] == 'mi') {
+          $lower /= 1.609344;
+          $upper /= 1.609344;
+        }
+
+        // Do some rounding.
+        $precision = 2;
+        if ($spatial['radius_measure'] == 'm') {
+          // Only use full numbers if unit is metres.
+          $precision = 0;
+        }
+        $lower = round($lower, $precision);
+        $upper = round($upper, $precision);
+
+        $results['search_api_facets'][$locationfield][] = array("filter" => '"' . $lower . ' ' . $spatial['radius_measure'] . ' to ' . $upper . ' ' . $spatial['radius_measure'] . '"', "count" => $count);
       }
     }
   }
 }
 
+/**
+ * Returns the locationfield of an Search API index (if it has any)
+ *
+ * @param integer $index_id
+ *   The index_id of an index for which the location field should be found.
+ *
+ * @return string
+ *   a string with the name of the location field
+ */
 function _search_api_location_get_locationfield($index_id) {
 
   $index = search_api_index_load($index_id);
 
   if (isset($index->options['processors']['location']) && $index->options['processors']['location']['status']) {
     foreach ($index->options['processors']['location']['settings']['fields'] as $field => $value) {
-      if ($value)
+      if ($value) {
         return $field;
+      }
     }
   }
 
   return FALSE;
 }
 
+/**
+ * Returns the location part of the search keys
+ *
+ * @param string $keys
+ *   The keys of the search page.
+ *
+ * @return array
+ *   an array of the location details
+ */
 function _search_api_location_get_location($keys) {
 
   $location = array();
@@ -278,6 +318,15 @@ function _search_api_location_get_location($keys) {
   }
 }
 
+/**
+ * Returns the keys part of the search keys
+ *
+ * @param string $keys
+ *   The keys of the search page.
+ *
+ * @return string
+ *   an string with the search keys without the location part.
+ */
 function _search_api_location_get_keys($keys) {
 
   if (is_array($keys)) {

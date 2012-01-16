@@ -15,7 +15,7 @@ class SearchApiViewsHandlerFilterLocation extends SearchApiViewsHandlerFilter {
     $field = $this->options['id'];
     $default_value = array();
 
-    // check if the input filter is filled in
+    // Check if the input filter is filled in.
     if (isset($form_state['input'][$field])) {
       $default_value['lat'] = $form_state['input'][$field]['lat'];
       $default_value['lng'] = $form_state['input'][$field]['lng'];
@@ -23,7 +23,7 @@ class SearchApiViewsHandlerFilterLocation extends SearchApiViewsHandlerFilter {
     }
     else {
       $default_value['lat'] = $this->options['lat'];
-      $default_value['lng'] =$this->options['lng'];
+      $default_value['lng'] = $this->options['lng'];
       $default_value['radius'] = $this->options['radius'];
     }
 
@@ -38,6 +38,9 @@ class SearchApiViewsHandlerFilterLocation extends SearchApiViewsHandlerFilter {
     );
   }
 
+  /**
+   * Default location settings
+   */
   public function option_definition() {
     $options = parent::option_definition();
 
@@ -52,6 +55,9 @@ class SearchApiViewsHandlerFilterLocation extends SearchApiViewsHandlerFilter {
     return $options;
   }
 
+  /**
+   * Alter and extend the options form
+   */
   public function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
 
@@ -88,11 +94,10 @@ class SearchApiViewsHandlerFilterLocation extends SearchApiViewsHandlerFilter {
       $spatial['lat'] = $this->view->exposed_input[$field]['lat'];
       $spatial['lng'] = $this->view->exposed_input[$field]['lng'];
       $spatial['radius'] = $this->view->exposed_input[$field]['radius'];
-      $spatial['radius_measure'] =  $this->options['radius_measure'];
+      $spatial['radius_measure'] = $this->options['radius_measure'];
       $spatial['field'] = $this->real_field;
 
       $this->query->setOption('spatial', $spatial);
     }
   }
 }
-

@@ -9,14 +9,14 @@
  */
 function search_api_location_element_info() {
   $elements = array();
-  $elements['search_api_location_pick'] =  array(
+  $elements['search_api_location_pick'] = array(
     '#input' => FALSE,
     '#process' => array('search_api_location_element_process'),
    // '#theme' => 'locationradius',
     '#theme_wrappers' => array('form_element'),
     '#options' => array(),
   );
-  
+
   return $elements;
 }
 
@@ -35,13 +35,13 @@ function search_api_location_element_process($element, $form_state, $complete_fo
   $radius_max_value = isset($form_state['input']['radius_max']) ? $form_state['input']['radius_max'] : $element['#default_value']['radius_max'];
   $radius_step_value = isset($form_state['input']['radius_step']) ? $form_state['input']['radius_step'] : $element['#default_value']['radius_step'];
   $radius_measure_value = isset($form_state['input']['radius_measure']) ? $form_state['input']['radius_measure'] : $element['#default_value']['radius_measure'];
-  
+
   $radius_measure_options = array(
     'm' => 'meter',
     'km' => 'kilometer',
     'mi' => 'mile',
   );
-  
+
   $element['address'] = array(
     '#type' => 'textfield',
     '#maxlength' => 120,
@@ -53,11 +53,11 @@ function search_api_location_element_process($element, $form_state, $complete_fo
 
   $element['help'] = array(
     '#attributes' => array(
-      'id' => $id . '-help',        
+      'id' => $id . '-help',
     ),
     '#markup' => t('Enter an address / location in the textfield or click on the map to set the marker'),
   );
-  
+
   $element['gmap'] = array(
     '#type' => 'container',
     '#attributes' => array(
@@ -65,7 +65,7 @@ function search_api_location_element_process($element, $form_state, $complete_fo
       'style' => array('width:100%; height:400px;'),
     ),
   );
-  
+
   $element['radius'] = array(
     '#type' => 'textfield',
     '#title' => t('Radius'),
@@ -74,7 +74,7 @@ function search_api_location_element_process($element, $form_state, $complete_fo
     '#field_suffix' => $radius_measure_options[$radius_measure_value],
     '#parents' => array_merge($element['#parents'], array('radius')),
   );
-  
+
   $element['slider'] = array(
     '#type' => 'container',
     '#attributes' => array(
@@ -82,8 +82,8 @@ function search_api_location_element_process($element, $form_state, $complete_fo
     ),
   );
 
-  if (isset($element['#default_value']['edit_mode']) && $element['#default_value']['edit_mode']) {
-    
+  if (!empty($element['#default_value']['edit_mode'])) {
+
     $element['radius_min'] = array(
       '#type' => 'textfield',
       '#title' => t('Radius minimum value'),
@@ -99,7 +99,7 @@ function search_api_location_element_process($element, $form_state, $complete_fo
       '#default_value' => $radius_max_value,
       '#parents' => array_merge($element['#parents'], array('radius_max')),
     );
-    
+
     $element['radius_step'] = array(
       '#type' => 'textfield',
       '#title' => t('Radius step value'),
@@ -107,20 +107,20 @@ function search_api_location_element_process($element, $form_state, $complete_fo
       '#default_value' => $radius_step_value,
       '#parents' => array_merge($element['#parents'], array('radius_step')),
     );
-    
+
     $element['radius_measure'] = array(
       '#type' => 'select',
       '#title' => t('Radius measure value'),
       '#options' => $radius_measure_options,
       '#default_value' => $radius_measure_value,
       '#parents' => array_merge($element['#parents'], array('radius_measure')),
-    );  
+    );
   }
 
   $element['lat'] = array(
     '#type' => 'hidden',
     '#attributes' => array(
-      'id' => $id . '-lat',        
+      'id' => $id . '-lat',
     ),
     '#default_value' => $lat_value,
     '#parents' => array_merge($element['#parents'], array('lat')),
@@ -129,32 +129,31 @@ function search_api_location_element_process($element, $form_state, $complete_fo
   $element['lng'] = array(
     '#type' => 'hidden',
     '#attributes' => array(
-      'id' => $id . '-lng',        
+      'id' => $id . '-lng',
     ),
     '#default_value' => $lng_value,
     '#parents' => array_merge($element['#parents'], array('lng')),
   );
-  
-  // add the javascript stuff
 
+  // Add the javascript stuff.
   drupal_add_library('system', 'ui.slider');
-  
+
   $element['googlemap']['#attached']['js'][] = array(
-    'data' => 'http://www.google.com/jsapi', 
-    'type' => 'external'
+    'data' => 'http://www.google.com/jsapi',
+    'type' => 'external',
   );
-  
+
   $element['googlemap']['#attached']['js'][] = array(
-    'data' => 'http://maps.google.com/maps/api/js?sensor=false', 
-    'type' => 'external'
+    'data' => 'http://maps.google.com/maps/api/js?sensor=false',
+    'type' => 'external',
   );
-  
+
   $element['googlemap']['#attached']['js'][] = array(
     'data' => drupal_get_path('module', 'search_api_location') . '/search_api_location.pick.js',
     'type' => 'file',
-    'scope' => 'footer'
+    'scope' => 'footer',
   );
-  
+
   $searchapilocation = array(
     $id => array(
       'lat' => $lat_value,
@@ -165,7 +164,7 @@ function search_api_location_element_process($element, $form_state, $complete_fo
       'radius_measure' => $radius_measure_value,
     ),
   );
-  
+
   $element['googlemap']['#attached']['js'][] = array('data' => array('searchapilocation' => $searchapilocation), 'type' => 'setting');
 
   return $element;

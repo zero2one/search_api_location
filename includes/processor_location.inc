@@ -13,10 +13,13 @@ class SearchApiLocation extends SearchApiAbstractProcessor {
   public function __construct(SearchApiIndex $index, array $options = array()) {
     parent::__construct($index, $options);
     $this->options += array(
-      'location_searchtype' => 1
+      'location_searchtype' => 1,
     );
   }
 
+  /**
+   * Check if one of the fields in the index supports location based search
+   */
   public function supportsIndex(SearchApiIndex $index) {
 
     foreach ($index->options['fields'] as $key => $value) {
@@ -28,6 +31,9 @@ class SearchApiLocation extends SearchApiAbstractProcessor {
     return FALSE;
   }
 
+  /**
+   * Select the location based search type
+   */
   public function configurationForm() {
     $form = parent::configurationForm();
 
@@ -46,7 +52,6 @@ class SearchApiLocation extends SearchApiAbstractProcessor {
         '#description' => t('Select the type of location based search you want to use.'),
         '#options' => array(
           '1' => 'distance around a point (latitude, longitude and radius)',
-      //    '2' => 'bounding box (everything in a box from thel left top to the right bottom)',
         ),
         '#default_value' => $this->options['location_searchtype'],
       ),
@@ -56,8 +61,8 @@ class SearchApiLocation extends SearchApiAbstractProcessor {
   }
 
   /**
-  * Calls processKeys() for the keys and processFilters() for the filters.
-  */
+   * Adds the location based search info to the query object
+   */
   public function preprocessSearchQuery(SearchApiQuery $query) {
 
     $locationfield = _search_api_location_get_locationfield($query->getIndex()->id);
@@ -70,16 +75,17 @@ class SearchApiLocation extends SearchApiAbstractProcessor {
       $spatial = _search_api_location_get_location($keys);
       $spatial['field'] = $locationfield;
 
-      $entity_query = new EntityFieldQuery;
+      $entity_query = new EntityFieldQuery();
       $result = $entity_query
         ->entityCondition('entity_type', 'search_api_page')
         ->propertyCondition('path', $search_id[1])
         ->execute();
 
-      // Load the search page, so we can get the measure defined in the search page
-      $page = search_api_page_load(array_shift(array_keys($result['search_api_page'])));
+      // Get the search page id and load the search page.
+      $page_id = array_shift(array_keys($result['search_api_page']));
+      $page = search_api_page_load($page_id);
 
-      //add the measure, so we can recalculate the radius value if necessery
+      // Add the measure, so we can recalculate the radius value if necessery.
       $spatial['radius_measure'] = $page->options['spatial'] ['radius_measure'];
 
       $query->setOption('spatial', $spatial);
@@ -88,10 +94,13 @@ class SearchApiLocation extends SearchApiAbstractProcessor {
       $keys = $query->getKeys();
     }
     elseif ($locationfield && $search_id[0] == "search_api_views") {
-      // everyting happens in the location filter
+      // Everyting happens in the location filter.
     }
   }
 
+  /**
+   * Alter the results
+   */
   public function postprocessSearchResults(array &$response, SearchApiQuery $query) {
     return;
   }
