@@ -1,17 +1,27 @@
 <?php
 /**
  * @file
- * Provides the location element to use in forms
+ * Provides location based search functionality to the Search API.
  */
+
+/**
+ * Implements hook_views_api().
+ */
+function search_api_location_map_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'search_api_location_map') . '/views',
+  );
+}
 
 /**
  * Implements hook_element_info().
  */
-function search_api_location_element_info() {
+function search_api_location_map_element_info() {
   $elements = array();
-  $elements['search_api_location_pick'] = array(
+  $elements['search_api_location_map_pick'] = array(
     '#input' => FALSE,
-    '#process' => array('search_api_location_element_process'),
+    '#process' => array('search_api_location_map_element_process'),
    // '#theme' => 'locationradius',
     '#theme_wrappers' => array('form_element'),
     '#options' => array(),
@@ -21,9 +31,9 @@ function search_api_location_element_info() {
 }
 
 /**
- * Processor for the search_api_location_pick field
+ * Processor for the search_api_location_map_pick field
  */
-function search_api_location_element_process($element, $form_state, $complete_form) {
+function search_api_location_map_element_process($element, $form_state, $complete_form) {
 
   $id = $element['#id'];
   $form_id = $complete_form['form_id'];
@@ -149,7 +159,7 @@ function search_api_location_element_process($element, $form_state, $complete_fo
   );
 
   $element['googlemap']['#attached']['js'][] = array(
-    'data' => drupal_get_path('module', 'search_api_location') . '/search_api_location.pick.js',
+    'data' => drupal_get_path('module', 'search_api_location_map') . '/search_api_location_map.pick.js',
     'type' => 'file',
     'scope' => 'footer',
   );

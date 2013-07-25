@@ -3,5 +3,5 @@ description = adds location based search to the Search API module
 package = Search
 core = 7.x
 
-files[] = includes/processor_location.inc
-files[] = views/handler_filter_location.inc
+dependencies[] = search_api
+dependencies[] = ctools

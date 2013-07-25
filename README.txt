@@ -1,39 +1,62 @@
--- SUMMARY --
+Search API location
+-------------------
 
-The Search API location module adds the possibility of location based searching 
-to the Search API module.
-Currently only Apache Solr is supported as server.
+This module adds support for indexing location values provided by the geofield
+module and subsequently filtering and/or sorting on them, provided the service
+class supports this.
 
--- REQUIREMENTS --
+Information for users
+---------------------
 
-- a content type /entity with a latlng field (currently geofield is supported,
-  Location fields probably work, bu I haven't tested it yet)
-- apache solr server 3.1+ (I only tested with 3.3 en 3.4, but location search is
-  included since 3.1)
-- latest dev of search_api, search_api_solr and search_api_page
+This module adds a new data type, "Latitude/longitude" to the "Fields" form of
+Search API indexes. You can use this to index the "LatLong Pair" property of
+fields of type "geofield". (You will first have to add the field under "Add
+related fields" at the bottom of the page.)
 
--- INSTALLATION --
+For this to have any effect, the service class of the index's server has to
+support the search_api_data_type_location feature. Currently, only the Search
+API Solr module [1] is known to support this feature. There is also a table at
+[2] which lists all known features and which service classes support them, but
+it might be out of date. When in doubt, consult the documentation of your
+service class.
 
-- put the module in sites/all/modules folder.
-- apply search_api_solr-compatibility-with-search_api_location.patch to the
-  search_api_solr module. 
-- update the schema.xml of solr with the version from the module
-- enable the module
-- add/modify a Search API index
-  - add a latitude/longitude field on the 'fields' tab of the index. The field
-    must return a latlng pair separated with a comma
-  - enable the location search processor and select the field it has to run on
-    on the 'workflow' tab of the index
-- add a new search page and select the index with the enabled location search
-  processor
-  - select the default settings (default point, min/max radius, stepping and
-    unit of measurement). The slider doesn't change automatically to the new
-    values (yet). So you have to edit the search page twice if you want to
-    select a radius that fits the min/max radius, stepping and unit of
-    measurement)
-- go to your search page a search with location based abilities :)
- 
--- CONTACT --
+[1] http://drupal.org/project/search_api_solr
+[2] http://drupal.org/node/1254698
 
-Current maintainers:
-* Mollux - http://drupal.org/user/785804
+To make real use of this module, and of data indexes as "Latitude/longitude",
+you will need to install additional modules. Two of them are included in this
+project: "Search API location views" and "Search API location pages". These add
+location search capabilities to the "Search API views" and the "Search API
+pages" module, respectively. Please refer to their own README.txt files for
+details.
+
+Information for developers
+--------------------------
+
+All provided hooks are listed in the search_api_location.api.php file.
+Documentation on the CTools plugin defined by this module, location_input, is
+also available there.
+
+This module defines a feature, "search_api_data_type_location". By supporting
+the feature with your service class, you indicate that you can index the
+"location" data type in a useful manner. The data type is defined as a latitude
+and longitude, in decimal degrees, separated by a comma, and has string format.
+E.g., Dries' place of birth would be represented as: "51.16831,4.394287".
+
+In addition to being able to index locations, you should also recognize the
+"search_api_location" search query option, which is defined as follows:
+
+The option is an array, where each value is an array that defines one set of
+location data for the query and has the following structure:
+- field: The Search API field identifier of the location field. Must be indexed
+  as type "location".
+- lat: The latitude of the point on which this location parameter is centered.
+- lon: The longitude of that point.
+- radius: (optional) If results should be filtered according to their distance
+  to the point, the maximum distance at which a point should be included (in
+  kilometers).
+- method: (optional) The method to use for filtering. This is backend-specific
+  and not guaranteed to have an effect. Service classes should ignore values of
+  this option which they don't recognize.
+Even when no radius is set, service classes can choose to use the location data,
+e.g., for sorting results or adapting facets on the field.

@@ -5,7 +5,7 @@
  * Provides the views handler for location fields
  */
 
-class SearchApiViewsHandlerFilterLocation extends SearchApiViewsHandlerFilter {
+class SearchApiLocationMapViewsHandlerFilter extends SearchApiViewsHandlerFilter {
 
   /**
    * Provide a form for setting the filter value.
