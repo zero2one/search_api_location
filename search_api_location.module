@@ -33,12 +33,17 @@ function search_api_location_get_location_fields(SearchApiIndex $index, $reset =
   $fields = &drupal_static(__FUNCTION__, array());
   if ($reset || empty($fields[$index->machine_name])) {
     $fields[$index->machine_name] = array();
-    if (($server = $index->server()) && $server->supportsFeature('search_api_data_type_location')) {
-      foreach ($index->getFields() as $key => $field) {
-        if (!empty($field['real_type']) && search_api_extract_inner_type($field['real_type']) == 'location') {
-          $fields[$index->machine_name][$key] = $field;
+    try {
+      if (($server = $index->server()) && $server->supportsFeature('search_api_data_type_location')) {
+        foreach ($index->getFields() as $key => $field) {
+          if (!empty($field['real_type']) && search_api_extract_inner_type($field['real_type']) == 'location') {
+            $fields[$index->machine_name][$key] = $field;
+          }
         }
       }
+    }
+    catch (SearchApiException $e) {
+      // Ignore missing servers.
     }
   }
   return $fields[$index->machine_name];
