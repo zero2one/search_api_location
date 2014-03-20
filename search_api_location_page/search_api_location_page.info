@@ -1,5 +1,5 @@
 name = Search API location pages
-description = Adds location filter capabilities for search paages.
+description = Adds location filter capabilities for search pages.
 package = Search
 core = 7.x
 
