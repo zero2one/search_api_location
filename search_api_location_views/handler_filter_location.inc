@@ -124,7 +124,24 @@ class SearchApiViewsHandlerFilterLocation extends SearchApiViewsHandlerFilter {
     if (!$this->value || !$this->operator) {
       return;
     }
+    if (empty($this->options['plugin'])) {
+      $vars = array(
+        '%filter' => $this->ui_name(TRUE),
+        '%view' => $this->view->get_human_name(),
+      );
+      watchdog('search_api_location', 'Filter %filter in view %view has no location input plugin selected. Ignoring location filter.', $vars, WATCHDOG_WARNING);
+      return;
+    }
     $plugin = search_api_location_get_input_plugins($this->options['plugin']);
+    if (!$plugin) {
+      $vars = array(
+        '%filter' => $this->ui_name(TRUE),
+        '%view' => $this->view->get_human_name(),
+        '%plugin' => $this->options['plugin'],
+      );
+      watchdog('search_api_location', 'Filter %filter in view %view uses unknown location input plugin %plugin. Ignoring location filter.', $vars, WATCHDOG_WARNING);
+      return;
+    }
     $location = $plugin['input callback']($this->value, $this->options['plugin-' . $this->options['plugin']]);
     if (!$location) {
       drupal_set_message(t('The location %address could not be resolved and was ignored.', array('%address' => $this->value)), 'warning');
