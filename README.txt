@@ -58,5 +58,9 @@ location data for the query and has the following structure:
 - method: (optional) The method to use for filtering. This is backend-specific
   and not guaranteed to have an effect. Service classes should ignore values of
   this option which they don't recognize.
+- distance: (optional) If set to TRUE, the distance to the given point is
+  returned in an additional field in the result. The name of the additional
+  field consists of the location field's identifier and the suffix "_distance".
+  Defaults to FALSE.
 Even when no radius is set, service classes can choose to use the location data,
 e.g., for sorting results or adapting facets on the field.

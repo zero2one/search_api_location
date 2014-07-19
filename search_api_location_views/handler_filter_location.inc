@@ -148,7 +148,7 @@ class SearchApiViewsHandlerFilterLocation extends SearchApiViewsHandlerFilter {
       return;
     }
     $location = explode(',', $location, 2);
-    $location_options = $this->query->getOption('search_api_location', array());
+    $location_options = (array) $this->query->getOption('search_api_location', array());
     // If the radius isn't numeric omit it. Necessary since "no radius" is "-".
     $radius = (!is_numeric($this->operator)) ? NULL : $this->operator;
     if ($this->options['radius_type'] == 'textfield' && is_numeric($this->options['radius_units'])) {

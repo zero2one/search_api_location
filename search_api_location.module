@@ -206,3 +206,31 @@ function _search_api_location_array_get_nested_value(array $array, $key) {
   }
   return NULL;
 }
+
+/**
+ * Calculates the distance between two lat/long values.
+ *
+ * @link http://rosettacode.org/wiki/Haversine_formula
+ *
+ * @param array $start
+ *   Array with the keys "lat" and "lon".
+ * @param array $destination
+ *   Array with the keys "lat" and "lon".
+ *
+ * @return float
+ *   Distance in kilometres.
+ */
+function search_api_location_calculate_distance($start, $destination) {
+  $start = array_map('deg2rad', $start);
+  $destination = array_map('deg2rad', $destination);
+
+  // Earth's radius in kilometers.
+  $radius_of_earth = 6371;
+  $diff_latitude = $start['lat'] - $destination['lat'];
+  $diff_longitude = $start['lon'] - $destination['lon'];
+  $a = sin($diff_latitude / 2) * sin($diff_latitude / 2) +
+    cos($destination['lat']) * cos($start['lat']) *
+    sin($diff_longitude / 2) * sin($diff_longitude / 2);
+  $c = 2 * asin(sqrt($a));
+  return $radius_of_earth * $c;
+}
