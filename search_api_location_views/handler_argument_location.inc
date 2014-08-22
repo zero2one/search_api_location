@@ -37,10 +37,10 @@ class SearchApiViewsHandlerArgumentLocation extends SearchApiViewsHandlerArgumen
       // Try to use geoPHP to read type.
       try {
         geophp_load();
-        $format = geoPHP::detectFormat($data);
+        $format = geoPHP::detectFormat($argument);
         if ($format) {
           $args = explode(':', $format);
-          array_unshift($args, $this->argument);
+          array_unshift($args, $argument);
           $location = call_user_func_array(array('geoPHP', 'load'), $args);
           $point['lat'] = $location->y();
           $point['lon'] = $location->x();
@@ -53,7 +53,7 @@ class SearchApiViewsHandlerArgumentLocation extends SearchApiViewsHandlerArgumen
 
     if (empty($point)) {
       // Try Solr LatLonType.
-      if (preg_match("/^([+-]?[0-9]+(?:\.[0-9]+)?),([+-]?[0-9]+(?:\.[0-9]+)?)$/", $this->argument, $match)) {
+      if (preg_match("/^([+-]?[0-9]+(?:\\.[0-9]+)?),([+-]?[0-9]+(?:\\.[0-9]+)?)$/", $argument, $match)) {
         $point['lat'] = $match[1];
         $point['lon'] = $match[2];
       }
