@@ -70,7 +70,7 @@ class SearchApiViewsHandlerFilterLocation extends SearchApiViewsHandlerFilter {
     $form['radius_options'] = array(
       '#type' => 'textarea',
       '#title' => t('Distance options'),
-      '#description' => t('Add one line per option for “Range” you want to provide. The first part of each line is the distance in kilometres, everything after the first space is the label. Include a line starting with "- " to include a no-op option.'),
+      '#description' => t('Add one line per option for “Range” you want to provide. The first part of each line is the distance in kilometres, everything after the first space is the label. "-" as the distance ignores the location for filtering, but will still use it for facets, sorts and distance calculation. Skipping the distance altogether (i.e., starting the line with a space) will provide an option for ignoring the entered location completely.'),
       '#default_value' => $this->options['radius_options'],
       '#dependency' => array(
         'edit-options-radius-type' => array('select'),
@@ -88,26 +88,26 @@ class SearchApiViewsHandlerFilterLocation extends SearchApiViewsHandlerFilter {
   }
 
   public function operator_form(&$form, &$form_state) {
-    if (!empty($form_state['exposed']) && $this->options['radius_type'] == 'select') {
+    if ($this->options['radius_type'] == 'select') {
       $form['operator'] = array(
         '#type' => 'select',
         '#options' => $this->operator_options(),
       );
-      $form['operator']['#default_value'] = key($form['operator']['#options']);
+      $form['operator']['#default_value'] = $this->operator;
     }
     else {
       $form['operator'] = array(
         '#type' => 'textfield',
         '#title' => t('Distance'),
         '#size' => 10,
-        '#default_value' => '',
+        '#default_value' => $this->operator,
       );
     }
   }
 
   public function operator_options() {
     $options = array();
-    $lines = array_filter(array_map('trim', explode("\n", $this->options['radius_options'])));
+    $lines = array_filter(array_map('rtrim', explode("\n", $this->options['radius_options'])));
     foreach ($lines as $line) {
       $pos = strpos($line, ' ');
       $range = substr($line, 0, $pos);
@@ -121,7 +121,7 @@ class SearchApiViewsHandlerFilterLocation extends SearchApiViewsHandlerFilter {
       $this->value = reset($this->value);
     }
     $this->value = trim($this->value);
-    if (!$this->value || !$this->operator) {
+    if (!$this->value || !($this->operator || is_numeric($this->operator))) {
       return;
     }
     if (empty($this->options['plugin'])) {
