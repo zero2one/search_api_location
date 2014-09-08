@@ -1,5 +1,5 @@
-Search API Location 2.x, dev (xx/xx/xxxx):
-------------------------------------------
+Search API Location 2.0, Beta 2 (09/08/2014):
+---------------------------------------------
 - #2298075 by drunken monkey, ufku: Fixed distance filter issues.
 - #2304149 by ufku: Fixed failure in point format detection.
 - #1812528 by das-peter, drunken monkey, ufku: Added proximity/distance
