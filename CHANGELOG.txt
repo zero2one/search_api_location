@@ -1,5 +1,7 @@
 Search API Location 2.x, dev (xx/xx/xxxx):
 ------------------------------------------
+- #2366857 by das-peter: Fixed unchecked assumptions in
+  search_api_location_views_views_data_alter().
 
 Search API Location 2.0, Beta 2 (09/08/2014):
 ---------------------------------------------
