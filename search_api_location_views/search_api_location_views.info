@@ -8,4 +8,5 @@ dependencies[] = search_api_location
 
 files[] = handler_field_location.inc
 files[] = handler_filter_location.inc
+files[] = handler_argument_bbox.inc
 files[] = handler_argument_location.inc

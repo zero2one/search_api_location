@@ -22,20 +22,27 @@ function search_api_location_views_views_data_alter(&$data) {
         $table[$key]['filter']['type'] = $field['real_type'];
         $table[$key]['argument']['handler'] = 'SearchApiViewsHandlerArgumentLocationGeofilt';
         $table[$key]['argument']['type'] = $field['real_type'];
-        // Add additional pseudo field to set point separately by an argument.
+        // Add pseudo field to set point separately by an argument.
         $table[$key . '_point']['group'] = $group;
         $table[$key . '_point']['title'] = $table[$key]['title'] . ' ' . t('point');
         $table[$key . '_point']['help'] = t('The central point for a distance filter. Also requires the radius.');
         $table[$key . '_point']['real field'] = $real_field;
         $table[$key . '_point']['argument']['handler'] = 'SearchApiViewsHandlerArgumentLocationPoint';
         $table[$key . '_point']['argument']['type'] = $field['real_type'];
-        // Add additional pseudo field to set radius separately by an argument.
+        // Add pseudo field to set radius separately by an argument.
         $table[$key . '_radius']['group'] = $group;
         $table[$key . '_radius']['title'] = $table[$key]['title'] . ' ' . t('radius');
         $table[$key . '_radius']['help'] = t('The radius for a distance filter. Also requires the central point.');
         $table[$key . '_radius']['real field'] = $real_field;
         $table[$key . '_radius']['argument']['handler'] = 'SearchApiViewsHandlerArgumentLocationRadius';
         $table[$key . '_radius']['argument']['type'] = 'decimal';
+        // Add pseudo field to filter by a bounding box with an argument.
+        $table[$key . '_bbox']['group'] = $group;
+        $table[$key . '_bbox']['title'] = $table[$key]['title'] . ' (' . t('bounding box') . ')';
+        $table[$key . '_bbox']['help'] = t('A bounding box (rectangle) to filter the location by, represented as four comma-separated numbers.');
+        $table[$key . '_bbox']['real field'] = $real_field;
+        $table[$key . '_bbox']['argument']['handler'] = 'SearchApiViewsHandlerArgumentLocationBbox';
+        $table[$key . '_bbox']['argument']['type'] = $field['real_type'];
       }
     }
   }

@@ -1,5 +1,7 @@
 Search API Location 2.x, dev (xx/xx/xxxx):
 ------------------------------------------
+- #2061639 by das-peter, randallknutson, drunken monkey: Added Views argument
+  handler for filtering by a bounding box.
 - #2366857 by das-peter: Fixed unchecked assumptions in
   search_api_location_views_views_data_alter().
 

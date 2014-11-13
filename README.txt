@@ -62,5 +62,13 @@ location data for the query and has the following structure:
   returned in an additional field in the result. The name of the additional
   field consists of the location field's identifier and the suffix "_distance".
   Defaults to FALSE.
+- bbox: (optional) A rectangle ("bounding box") for which to filter, ignoring
+  "lat", "lon" and "distance". If present, "lat" and "lon" are optional, too. It
+  is allowed to specify both a "bbox" and a "distance" filter. The rectangle is
+  represented as an associative array containing exactly the following keys:
+  - left
+  - bottom
+  - right
+  - top
 Even when no radius is set, service classes can choose to use the location data,
 e.g., for sorting results or adapting facets on the field.
