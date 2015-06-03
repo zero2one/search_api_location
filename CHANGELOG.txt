@@ -5,7 +5,7 @@ Search API Location 2.x, dev (xx/xx/xxxx):
 - #2366857 by das-peter: Fixed unchecked assumptions in
   search_api_location_views_views_data_alter().
 
-Search API Location 2.0, Beta 2 (09/08/2014):
+Search API Location 2.0, Beta 2 (2014-09-08):
 ---------------------------------------------
 - #2298075 by drunken monkey, ufku: Fixed distance filter issues.
 - #2304149 by ufku: Fixed failure in point format detection.
@@ -15,6 +15,6 @@ Search API Location 2.0, Beta 2 (09/08/2014):
 - #2221411 by drunken monkey: Fixed typo in module description.
 - #2147557 by drunken monkey: Improved error handling.
 
-Search API Location 2.0, Beta 1 (07/26/2013):
+Search API Location 2.0, Beta 1 (2013-07-26):
 ---------------------------------------------
 Basic module functionality and Views integration is working.
