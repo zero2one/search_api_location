@@ -1,0 +1,8 @@
+type: module
+name: 'Search API Location'
+description: 'Adds location based search to the Search API module'
+package: Search
+core: 8.x
+configure: search_api.overview
+dependencies:
+  - search_api
