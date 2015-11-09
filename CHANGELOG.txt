@@ -1,4 +1,4 @@
-Search API Location 2.x, dev (xx/xx/xxxx):
+Search API Location 2.x, dev (xxxx-xx-xx):
 ------------------------------------------
 - #2061639 by das-peter, randallknutson, drunken monkey: Added Views argument
   handler for filtering by a bounding box.
