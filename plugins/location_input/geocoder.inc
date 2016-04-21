@@ -63,7 +63,7 @@ function search_api_location_input_geocoder_form(array &$form_state, array $opti
   }
   $handler_id = $handler_id ? $handler_id : $options['geocoder_handler'];
   if ($handler_id) {
-    $processor = ctools_get_plugins('geocoder', 'geocoder_handler', $handler_id);
+    $processor = geocoder_get_handler($handler_id);
   }
 
   $handlers = array();
