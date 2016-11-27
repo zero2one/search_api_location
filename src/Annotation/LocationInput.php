@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\search_api_location\Annotation\LocationInput.
- */
-
 namespace Drupal\search_api_location\Annotation;
 
 use Drupal\Component\Annotation\Plugin;
@@ -31,18 +26,18 @@ class LocationInput extends Plugin {
   /**
    * The human-readable name of the Location Input plugin.
    *
-   * @ingroup plugin_translatable
-   *
    * @var \Drupal\Core\Annotation\Translation
+   *
+   * @ingroup plugin_translatable
    */
   public $label;
 
   /**
    * The Location Input description.
    *
-   * @ingroup plugin_translatable
-   *
    * @var \Drupal\Core\Annotation\Translation
+   *
+   * @ingroup plugin_translatable
    */
   public $description;
 

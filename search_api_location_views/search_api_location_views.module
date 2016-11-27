@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * @file
+ * Provide Views integration for Search API Location.
+ */
+
+use Drupal\search_api\Entity\Index;
+use Drupal\search_api\Plugin\views\query\SearchApiQuery;
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function search_api_location_views_views_data_alter(&$data) {
+  /** @var \Drupal\search_api\IndexInterface $index */
+  foreach (Index::loadMultiple() as $index) {
+    $table = &$data['search_api_index_' . $index->id()];
+    /** @var \Drupal\search_api\Item\FieldInterface $field */
+    foreach ($index->getFields() as $field_id => $field) {
+      if ($field->getType() == 'location') {
+        // Adding filter to location fields.
+        $table[$field_id]['filter']['title'] = $field->getLabel();
+        $table[$field_id]['filter']['id'] = 'search_api_location';
+        $table[$field_id]['filter']['help'] = $field->getDescription();
+
+        $location_field = $field_id . '__distance';
+        $table[$location_field]['group'] = $table[$field_id]['group'];
+        $table[$location_field]['group'] = t('@datasource datasource', array('@datasource' => $field->getDatasource()->label()));
+        $table[$location_field]['title'] = t('@field (indexed field) - distance', array('@field' => $field->getLabel()));
+        $table[$location_field]['help'] = t('Calculated distance to the %field field', array('%field' => $field->getLabel()));
+        $table[$location_field]['field']['type'] = 'decimal';
+        $table[$location_field]['field']['id'] = 'numeric';
+        $table[$location_field]['field']['click sortable'] = TRUE;
+        $table[$location_field]['field']['real field'] = $table[$field_id]['field']['real field'] . '__distance';
+        $table[$location_field]['sort']['id'] = 'search_api';
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_views_post_execute().
+ */
+function search_api_location_views_views_post_execute(ViewExecutable $view) {
+  if ($view->getQuery() instanceof SearchApiQuery) {
+    /** @var \Drupal\search_api\Plugin\views\query\SearchApiQuery $query */
+    $query = $view->getQuery();
+
+    foreach ($query->getIndex()->getFields() as $field_id => $field) {
+      if ($field->getType() == 'location') {
+        foreach ($view->result as &$result) {
+          $result->{$field->getCombinedPropertyPath() . '__distance'} = $result->{$field->getCombinedPropertyPath() . '__distance'}[0];
+        }
+      }
+    }
+  }
+}

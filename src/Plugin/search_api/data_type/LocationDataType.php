@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\search_api_location\Plugin\search_api\data_type\LocationDataType.
- */
-
 namespace Drupal\search_api_location\Plugin\search_api\data_type;
 
 use Drupal\search_api\DataType\DataTypePluginBase;
@@ -19,5 +14,23 @@ use Drupal\search_api\DataType\DataTypePluginBase;
  * )
  */
 class LocationDataType extends DataTypePluginBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getValue($value) {
+    $geom = \geoPHP::load($value);
+
+    if ($geom) {
+      $centroid = $geom->getCentroid();
+      $lon = $centroid->getX();
+      $lat = $centroid->getY();
+
+      return "$lat,$lon";
+    }
+    else {
+      return $value;
+    }
+  }
 
 }
