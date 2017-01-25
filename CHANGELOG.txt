@@ -1,5 +1,6 @@
 Search API Location 2.x, dev (xxxx-xx-xx):
 ------------------------------------------
+- #1762884 by toddtomlinson: Fixed Google map for HTTPS sites.
 - #2701947 by drunken monkey, SurfinSpirit: Fixed configuration form of the
   Views location filter.
 - #2061639 by das-peter, randallknutson, drunken monkey: Added Views argument
