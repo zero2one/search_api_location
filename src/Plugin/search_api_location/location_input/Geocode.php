@@ -65,7 +65,7 @@ class Geocode extends LocationInputPluginBase {
 
     $form['plugins'] = [
       '#type' => 'table',
-      '#header' => [t('Geocoder plugins'), $this->t('Weight')],
+      '#header' => [$this->t('Geocoder plugins'), $this->t('Weight')],
       '#tabledrag' => [[
         'action' => 'order',
         'relationship' => 'sibling',

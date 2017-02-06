@@ -86,8 +86,8 @@ class SearchApiFilterLocation extends FilterPluginBase {
 
     $form['plugin'] = array(
       '#type' => 'select',
-      '#title' => t('Input method'),
-      '#description' => t('Select the method to use for parsing locations entered by the user.'),
+      '#title' => $this->t('Input method'),
+      '#description' => $this->t('Select the method to use for parsing locations entered by the user.'),
       '#options' => $this->locationInputManager->getInstancesOptions(),
       '#default_value' => $this->options['plugin'],
       '#required' => TRUE,

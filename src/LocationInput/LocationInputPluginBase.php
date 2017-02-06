@@ -29,19 +29,19 @@ abstract class LocationInputPluginBase extends ConfigurablePluginBase implements
 
     $form['radius_type'] = array(
       '#type' => 'select',
-      '#title' => t('Type of distance input'),
-      '#description' => t('Select the type of input element for the distance option.'),
+      '#title' => $this->t('Type of distance input'),
+      '#description' => $this->t('Select the type of input element for the distance option.'),
       '#options' => array(
-        'select' => t('Select'),
-        'textfield' => t('Text field'),
+        'select' => $this->t('Select'),
+        'textfield' => $this->t('Text field'),
       ),
       '#default_value' => $this->configuration['radius_type'],
     );
 
     $form['radius_options'] = array(
       '#type' => 'textarea',
-      '#title' => t('Distance options'),
-      '#description' => t('Add one line per option for “Range” you want to provide. The first part of each line is the distance in kilometres, everything after the first space is the label. "-" as the distance ignores the location for filtering, but will still use it for facets, sorts and distance calculation. Skipping the distance altogether (i.e., starting the line with a space) will provide an option for ignoring the entered location completely.'),
+      '#title' => $this->t('Distance options'),
+      '#description' => $this->t('Add one line per option for “Range” you want to provide. The first part of each line is the distance in kilometres, everything after the first space is the label. "-" as the distance ignores the location for filtering, but will still use it for facets, sorts and distance calculation. Skipping the distance altogether (i.e., starting the line with a space) will provide an option for ignoring the entered location completely.'),
       '#default_value' => $this->configuration['radius_options'],
       '#states' => [
         'visible' => [
@@ -52,8 +52,8 @@ abstract class LocationInputPluginBase extends ConfigurablePluginBase implements
 
     $form['radius_units'] = array(
       '#type' => 'textfield',
-      '#title' => t('Distance conversion factor'),
-      '#description' => t('Enter the conversion factor from the expected unit of the user input to kilometers. E.g., miles would have a factor of 1.60935.'),
+      '#title' => $this->t('Distance conversion factor'),
+      '#description' => $this->t('Enter the conversion factor from the expected unit of the user input to kilometers. E.g., miles would have a factor of 1.60935.'),
       '#default_value' => $this->configuration['radius_units'],
       '#states' => [
         'visible' => [
