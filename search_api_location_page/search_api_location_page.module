@@ -514,7 +514,7 @@ function search_api_location_page_search_api_query_alter(SearchApiQueryInterface
 }
 
 /**
- * Helper funciton for returning those entries of a parameter array relevant to location search.
+ * Helper function for returning those entries of a parameter array relevant to location search.
  *
  * These are the ones with non-empty values and keys ending on "-location" or
  * (when $include_radius is set) "-radius". A radius without location is always
