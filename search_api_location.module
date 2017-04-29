@@ -176,6 +176,56 @@ function search_api_location_get_input_plugin_options() {
 }
 
 /**
+ * Implements hook_field_info_alter().
+ *
+ * Adds support for Location fields.
+ */
+function search_api_location_field_info_alter(&$info) {
+  if (isset($info['location'])) {
+    $info['location']['property_callbacks'][] = 'search_api_location_location_properties';
+  }
+}
+
+/**
+ * Adds additional properties to "Location" fields.
+ *
+ * @param array $info
+ *   The entire entity property info.
+ * @param string $entity_type
+ *   The entity type to which the field is attached.
+ * @param array $field
+ *   The field info array.
+ * @param array $instance
+ *   The field instance info array.
+ */
+function search_api_location_location_properties(&$info, $entity_type, $field, $instance) {
+  $property = &$info[$entity_type]['bundles'][$instance['bundle']]['properties'][$field['field_name']];
+
+  $property['property info']['latlon'] = array(
+    'type' => 'text',
+    'label' => t('Latitude/longitude pair'),
+    'getter callback' => 'search_api_location_location_latlon_get',
+  );
+}
+
+/**
+ * Retrieves the "latlon" property value for a location field.
+ *
+ * @param array $data
+ *   The available data for the field.
+ *
+ * @return string|null
+ *   The "latlon" property value, as a latitude/longitude pair in format
+ *   "LAT,LON", if both values are set. NULL otherwise.
+ */
+function search_api_location_location_latlon_get($data) {
+  if (isset($data['latitude']) && isset($data['longitude'])) {
+    return $data['latitude'] . ',' . $data['longitude'];
+  }
+  return NULL;
+}
+
+/**
  * Helper function for finding a key anywhere in an array.
  *
  * @param array $array
