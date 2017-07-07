@@ -55,6 +55,14 @@ class SearchApiFilterLocation extends FilterPluginBase {
   }
 
   /**
+   * Display the filter on the administrative summary
+   */
+  public function adminSummary() {
+    $pluginId= $this->options['plugin'];
+    return $this->operator . ' ' . $pluginId;
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function defineOptions() {
