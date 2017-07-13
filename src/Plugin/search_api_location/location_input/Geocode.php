@@ -20,14 +20,20 @@ class Geocode extends LocationInputPluginBase {
    * {@inheritdoc}
    */
   public function getParsedInput($input) {
-    $active_plugins = $this->getActivePlugins();
-    /** @var \Geocoder\Model\AddressCollection $geocoded_addresses */
-    $geocoded_addresses = \Drupal::service('geocoder')->geocode($input, $active_plugins);
-
-    if ($geocoded_addresses) {
-      return $geocoded_addresses->first()->getLatitude() . ',' . $geocoded_addresses->first()->getLongitude();
+    if (!isset($input['value'])) {
+      throw new \InvalidArgumentException('Input doesn\'t contain a location value.');
     }
-
+    else {
+      $active_plugins = $this->getActivePlugins();
+      /** @var \Geocoder\Model\AddressCollection $geocoded_addresses */
+      $geocoded_addresses = \Drupal::service('geocoder')
+        ->geocode($input['value'], $active_plugins);
+      if ($geocoded_addresses) {
+        return $geocoded_addresses->first()
+            ->getLatitude() . ',' . $geocoded_addresses->first()
+            ->getLongitude();
+      }
+    }
     return NULL;
   }
 
@@ -36,11 +42,11 @@ class Geocode extends LocationInputPluginBase {
    */
   public function getActivePlugins() {
     $plugins = $this->configuration['plugins'];
-
-    $active_plugins = [];
+    uasort($plugins, function($a,$b){return ($a["weight"] < $b["weight"]) ? -1 : 1;});
+    $active_plugins = array();
     foreach ($plugins as $id => $plugin) {
       if ($plugin['checked']) {
-        $active_plugins[(int) $plugin['weight']] = $id;
+        $active_plugins[$id] = $id;
       }
     }
 

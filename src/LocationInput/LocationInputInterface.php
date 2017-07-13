@@ -15,7 +15,7 @@ interface LocationInputInterface extends PluginFormInterface {
   /**
    * Returns the parsed user input.
    *
-   * @param string $input
+   * @param array $input
    *   The text entered by the user.
    *
    * @return mixed
