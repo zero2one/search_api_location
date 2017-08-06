@@ -19,7 +19,7 @@ class Geocode extends LocationInputPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getParsedInput($input) {
+  public function getParsedInput(array $input) {
     if (!isset($input['value'])) {
       throw new \InvalidArgumentException('Input doesn\'t contain a location value.');
     }
@@ -40,10 +40,16 @@ class Geocode extends LocationInputPluginBase {
   /**
    * Gets the active geocoder plugins.
    */
-  public function getActivePlugins() {
+  protected function getActivePlugins() {
     $plugins = $this->configuration['plugins'];
-    uasort($plugins, function($a,$b){return ($a["weight"] < $b["weight"]) ? -1 : 1;});
-    $active_plugins = array();
+    uasort(
+      $plugins,
+      function ($a, $b) {
+        return ($a["weight"] < $b["weight"]) ? -1 : 1;
+      }
+    );
+
+    $active_plugins = [];
     foreach ($plugins as $id => $plugin) {
       if ($plugin['checked']) {
         $active_plugins[$id] = $id;
