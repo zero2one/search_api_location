@@ -10,18 +10,32 @@ use Drupal\Core\Plugin\PluginFormInterface;
  */
 interface LocationInputInterface extends PluginFormInterface {
 
+  /**
+   * Checks if the location passed in is correct for the current settings.
+   *
+   * @param array $input
+   *   The text entered by the user, contains either "value" or "lat"+"lng" as
+   *   keys.
+   * @param array $settings
+   *   An array of settings for the plugin.
+   *
+   * @return bool
+   *   True if the input is successful, false otherwise.
+   */
   public function hasInput($input, array $settings);
 
   /**
    * Returns the parsed user input.
    *
    * @param array $input
-   *   The text entered by the user.
+   *   The text entered by the user, contains either "value" or "lat"+"lng" as
+   *   keys.
    *
    * @return mixed
-   *   $input if it is a valid location string. NULL otherwise.
+   *   Returns a string with "latitude,longitude" if we can find a location.
+   *   NULL otherwise.
    */
-  public function getParsedInput($input);
+  public function getParsedInput(array $input);
 
   /**
    * Returns the label of the location input.

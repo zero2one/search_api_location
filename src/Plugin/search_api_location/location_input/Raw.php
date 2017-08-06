@@ -19,7 +19,11 @@ class Raw extends LocationInputPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getParsedInput($input) {
+  public function getParsedInput(array $input) {
+    if (!isset($input['value'])) {
+      throw new \InvalidArgumentException('Input doesn\'t contain a location value.');
+    }
+
     $input['value'] = trim($input['value']);
     return preg_match('/^[+-]?[0-9]+(?:\.[0-9]+)?,[+-]?[0-9]+(?:\.[0-9]+)?$/', $input['value']) ? $input['value'] : NULL;
   }

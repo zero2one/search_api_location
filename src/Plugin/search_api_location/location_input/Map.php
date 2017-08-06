@@ -26,7 +26,10 @@ class Map extends LocationInputPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getParsedInput($input) {
+  public function getParsedInput(array $input) {
+    if (!isset($input['lat']) || !isset($input['lng'])) {
+      throw new \InvalidArgumentException('Input doesn\'t contain a location value.');
+    }
     return $input['lat'] . ',' . $input['lng'];
   }
 

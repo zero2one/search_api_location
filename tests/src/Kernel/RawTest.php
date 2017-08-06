@@ -9,13 +9,12 @@ use Drupal\search_api_location\Plugin\search_api_location\location_input\Raw;
  * Tests RawTest plugin parsing.
  *
  * @group search_api_location
+ * @coversDefaultClass \Drupal\search_api_location\Plugin\search_api_location\location_input\Raw
  */
 class RawTest extends KernelTestBase {
 
   /**
-   * Modules to enable for this test.
-   *
-   * @var string[]
+   * {@inheritdoc}
    */
   public static $modules = [
     'user',
@@ -24,14 +23,63 @@ class RawTest extends KernelTestBase {
   ];
 
   /**
-   * Test the parsed input entered by user in raw format.
+   * @var \Drupal\search_api_location\Plugin\search_api_location\location_input\Raw
    */
-  public function testGetParsedInput() {
-    $sut = $this->container
+  protected $sut;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    parent::setUp();
+
+    $this->sut = $this->container
       ->get('plugin.manager.search_api_location.location_input')
       ->createInstance('raw');
-    $this->assertEquals($sut->getParsedInput("  20.548,67.945 "), "20.548,67.945");
-    $this->assertEquals($sut->getParsedInput("^20.548,67.945"), NULL);
+  }
+
+  /**
+   * Test the parsed input entered by user in raw format.
+   *
+   * @covers ::getParsedInput
+   * @dataProvider provideValidInput
+   */
+  public function testValidParsedInput($valid, $expected) {
+    $input = ['value' => $valid];
+    $parsedInput = $this->sut->getParsedInput($input);
+    $this->assertEquals($parsedInput, $expected);
+  }
+
+  /**
+   * Test the parsed input entered by user in raw format with invalid data.
+   *
+   * @covers ::getParsedInput
+   */
+  public function testInvalidInput() {
+    $input = ['value' => '^20.548,67.945'];
+    $this->assertNull($this->sut->getParsedInput($input));
+  }
+
+  /**
+   * Tests with unexpected input.
+   *
+   * @covers ::getParsedInput
+   */
+  public function testWithUnexpectedInput() {
+    $input = ['animal' => 'llama'];
+    $this->setExpectedException(\InvalidArgumentException::class);
+    $this->sut->getParsedInput($input);
+  }
+
+  /**
+   * Data provider for ::testValidParsedInput.
+   */
+  public function provideValidInput() {
+    return [
+      'simple' => ['20,67', '20,67'],
+      'with decimals' => ['20.548,67.945', '20.548,67.945'],
+      'with spaces' => ['  20.548,67.945', '20.548,67.945'],
+    ];
   }
 
 }
