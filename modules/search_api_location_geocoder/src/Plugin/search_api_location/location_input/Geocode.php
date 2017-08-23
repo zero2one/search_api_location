@@ -4,6 +4,7 @@ namespace Drupal\search_api_location_geocoder\Plugin\search_api_location\locatio
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\search_api_location\LocationInput\LocationInputPluginBase;
+use Drupal\Component\Utility\SortArray;
 
 /**
  * Represents the Raw Location Input.
@@ -42,12 +43,7 @@ class Geocode extends LocationInputPluginBase {
    */
   protected function getActivePlugins() {
     $plugins = $this->configuration['plugins'];
-    uasort(
-      $plugins,
-      function ($a, $b) {
-        return ($a["weight"] < $b["weight"]) ? -1 : 1;
-      }
-    );
+    uasort($plugins, [SortArray::class, 'sortByWeightProperty']);
 
     $active_plugins = [];
     foreach ($plugins as $id => $plugin) {
