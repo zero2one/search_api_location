@@ -13,9 +13,9 @@ function facets_map_widget_facets_search_api_query_type_mapping_alter($backend_p
   /** @var \Drupal\search_api\Backend\BackendInterface $plugin */
   $plugin = $backend_manager->createInstance($backend_plugin_id);
 
-  // Check if locations are supported by the backend plugin before adding the
+  // Check if rpt data type is supported by the backend plugin before adding the
   // query type to the allowed query types.
-  if (in_array('search_api_rpt', $plugin->getSupportedFeatures(), TRUE)) {
+  if ($plugin->supportsDataType('rpt')) {
     $query_types['rpt'] = 'search_api_rpt';
   }
 }
