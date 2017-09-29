@@ -3,7 +3,6 @@
 namespace Drupal\Tests\search_api_location\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
-use Drupal\search_api_location\Plugin\search_api_location\location_input\Raw;
 
 /**
  * Tests RawTest plugin parsing.
@@ -19,10 +18,12 @@ class RawTest extends KernelTestBase {
   public static $modules = [
     'user',
     'search_api',
-    'search_api_location'
+    'search_api_location',
   ];
 
   /**
+   * The Raw location input plugin under test.
+   *
    * @var \Drupal\search_api_location\Plugin\search_api_location\location_input\Raw
    */
   protected $sut;

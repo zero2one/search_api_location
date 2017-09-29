@@ -45,7 +45,7 @@ CONFIGURATION
 After enabling search_api_location go to
    /admin/config/search/search-api/index/YOUR_INDEX_NAME/fields
 
-Afterwards click on 'add fields' and select the geofield which you want to index.
+Click on 'add fields' and select the geofield which you want to index.
 Note the geofield must have stored a lat/lon pair value.
 Then select type as Latitude/longitude to work with search_api_location_views
 and/or Recursive Prefix Tree to work with fcets_map_widget.

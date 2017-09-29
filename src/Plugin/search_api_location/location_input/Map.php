@@ -38,44 +38,44 @@ class Map extends LocationInputPluginBase {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 
-    $form['radius_border_color'] = array(
+    $form['radius_border_color'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Border color'),
       '#description' => $this->t('The hexadecimal value of the radius border color.'),
       '#default_value' => $this->configuration['radius_border_color'],
       '#size' => 7,
-    );
+    ];
 
-    $form['radius_border_weight'] = array(
+    $form['radius_border_weight'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Border weight'),
       '#description' => $this->t('The radius border weight in pixels.'),
       '#default_value' => $this->configuration['radius_border_weight'],
       '#size' => 3,
-    );
+    ];
 
-    $form['radius_background_color'] = array(
+    $form['radius_background_color'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Fill color'),
       '#description' => $this->t('The hexadecimal value of the fill color.'),
       '#default_value' => $this->configuration['radius_background_color'],
       '#size' => 7,
-    );
+    ];
 
-    $form['radius_background_transparency'] = array(
+    $form['radius_background_transparency'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Fill transparency'),
       '#description' => $this->t('The opacity of the fill color (a value between 0.0 and 1.0)'),
       '#default_value' => $this->configuration['radius_background_transparency'],
       '#size' => 3,
-    );
+    ];
 
-    $form['marker_image'] = array(
+    $form['marker_image'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Marker image'),
       '#description' => $this->t('The path to the marker image.'),
       '#default_value' => $this->configuration['marker_image'],
-    );
+    ];
 
     return $form;
   }

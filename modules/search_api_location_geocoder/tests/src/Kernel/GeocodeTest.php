@@ -3,7 +3,6 @@
 namespace Drupal\Tests\search_api_location_geocoder\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
-use Drupal\search_api_location_geocoder\Plugin\search_api_location\location_input;
 
 /**
  * Test for the geocode plugin.
@@ -21,11 +20,13 @@ class GeocodeTest extends KernelTestBase {
     'search_api',
     'search_api_location',
     'search_api_location_geocoder',
-    'geocoder'
+    'geocoder',
   ];
 
   /**
-   * @var \Drupal\search_api_location\LocationInput\LocationInputInterface
+   * The Geocode location input plugin under test.
+   *
+   * @var \Drupal\search_api_location_geocoder\Plugin\search_api_location\location_input\Geocode
    */
   protected $sut;
 

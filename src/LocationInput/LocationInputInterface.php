@@ -22,7 +22,7 @@ interface LocationInputInterface extends PluginFormInterface {
    * @return bool
    *   True if the input is successful, false otherwise.
    */
-  public function hasInput($input, array $settings);
+  public function hasInput(array $input, array $settings);
 
   /**
    * Returns the parsed user input.
@@ -53,6 +53,19 @@ interface LocationInputInterface extends PluginFormInterface {
    */
   public function getDescription();
 
-  public function getForm(array $form, FormStateInterface $form_state, $options);
+  /**
+   * Returns a form to configure settings for the plugin.
+   *
+   * @param array $form
+   *   The form where the settings form is being included in.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param array $options
+   *   Option array with extra info of the plugin.
+   *
+   * @return array
+   *   The form definition for the widget settings.
+   */
+  public function getForm(array $form, FormStateInterface $form_state, array $options);
 
 }

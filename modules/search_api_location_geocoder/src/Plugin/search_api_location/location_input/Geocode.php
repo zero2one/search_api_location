@@ -31,8 +31,8 @@ class Geocode extends LocationInputPluginBase {
         ->geocode($input['value'], $active_plugins);
       if ($geocoded_addresses) {
         return $geocoded_addresses->first()
-            ->getLatitude() . ',' . $geocoded_addresses->first()
-            ->getLongitude();
+          ->getLatitude() . ',' . $geocoded_addresses->first()
+          ->getLongitude();
       }
     }
     return NULL;
@@ -59,9 +59,9 @@ class Geocode extends LocationInputPluginBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
-      'plugins' => array(),
-    );
+    return [
+      'plugins' => [],
+    ];
   }
 
   /**
@@ -90,13 +90,13 @@ class Geocode extends LocationInputPluginBase {
           '#title' => $plugin_name,
           '#default_value' => $this->configuration['plugins'][$plugin_id]['checked'],
         ],
-        'weight' => array(
+        'weight' => [
           '#type' => 'weight',
           '#title' => $this->t('Weight for @title', ['@title' => $plugin_name]),
           '#title_display' => 'invisible',
           '#attributes' => ['class' => ['plugins-order-weight']],
           '#default_value' => $this->configuration['plugins'][$plugin_id]['weight'],
-        ),
+        ],
         '#attributes' => ['class' => ['draggable']],
       ];
     }

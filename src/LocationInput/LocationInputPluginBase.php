@@ -27,18 +27,18 @@ abstract class LocationInputPluginBase extends ConfigurablePluginBase implements
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 
-    $form['radius_type'] = array(
+    $form['radius_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Type of distance input'),
       '#description' => $this->t('Select the type of input element for the distance option.'),
-      '#options' => array(
+      '#options' => [
         'select' => $this->t('Select'),
         'textfield' => $this->t('Text field'),
-      ),
+      ],
       '#default_value' => $this->configuration['radius_type'],
-    );
+    ];
 
-    $form['radius_options'] = array(
+    $form['radius_options'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Distance options'),
       '#description' => $this->t('Add one line per option for “Range” you want to provide. The first part of each line is the distance in kilometres, everything after the first space is the label. "-" as the distance ignores the location for filtering, but will still use it for facets, sorts and distance calculation. Skipping the distance altogether (i.e., starting the line with a space) will provide an option for ignoring the entered location completely.'),
@@ -48,7 +48,7 @@ abstract class LocationInputPluginBase extends ConfigurablePluginBase implements
           'select[name="options[plugin-' . $this->pluginId . '][radius_type]"]' => ['value' => 'select'],
         ],
       ],
-    );
+    ];
 
     $form['radius_units'] = array(
       '#type' => 'textfield',

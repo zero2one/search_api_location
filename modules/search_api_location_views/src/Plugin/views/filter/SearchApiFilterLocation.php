@@ -33,7 +33,7 @@ class SearchApiFilterLocation extends FilterPluginBase {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param LocationInputPluginManager $location_input_manager
+   * @param \Drupal\search_api_location\LocationInput\LocationInputPluginManager $location_input_manager
    *   The plugin implementation definition.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, LocationInputPluginManager $location_input_manager) {
@@ -55,10 +55,10 @@ class SearchApiFilterLocation extends FilterPluginBase {
   }
 
   /**
-   * Display the filter on the administrative summary
+   * Display the filter on the administrative summary.
    */
   public function adminSummary() {
-    $pluginId= $this->options['plugin'];
+    $pluginId = $this->options['plugin'];
     return $this->operator . ' ' . $pluginId;
   }
 
@@ -70,7 +70,7 @@ class SearchApiFilterLocation extends FilterPluginBase {
 
     $options['plugin']['default'] = '';
     foreach ($this->locationInputManager->getDefinitions() as $id => $plugin) {
-      $options["plugin-$id"]['default'] = array();
+      $options["plugin-$id"]['default'] = [];
     }
 
     $options['radius_type']['default'] = 'select';
@@ -92,14 +92,14 @@ class SearchApiFilterLocation extends FilterPluginBase {
    */
   public function buildExtraOptionsForm(&$form, FormStateInterface $form_state) {
 
-    $form['plugin'] = array(
+    $form['plugin'] = [
       '#type' => 'select',
       '#title' => $this->t('Input method'),
       '#description' => $this->t('Select the method to use for parsing locations entered by the user.'),
       '#options' => $this->locationInputManager->getInstancesOptions(),
       '#default_value' => $this->options['plugin'],
       '#required' => TRUE,
-    );
+    ];
 
     foreach ($this->locationInputManager->getDefinitions() as $id => $plugin) {
       $plugin = $this->locationInputManager->createInstance($id, $this->options['plugin-' . $id]);
@@ -176,25 +176,25 @@ class SearchApiFilterLocation extends FilterPluginBase {
 
     $location = $plugin->getParsedInput($this->value);
     if (!$location) {
-      drupal_set_message($this->t('The location %location could not be resolved and was ignored.', array('%location' => $this->value['value'])), 'warning');
+      drupal_set_message($this->t('The location %location could not be resolved and was ignored.', ['%location' => $this->value['value']]), 'warning');
       return;
     }
     $location = explode(',', $location, 2);
     /** @var \Drupal\search_api\Query\Query $query */
     $query = $this->query;
 
-    $location_options = (array) $query->getOption('search_api_location', array());
+    $location_options = (array) $query->getOption('search_api_location', []);
     // If the radius isn't numeric omit it. Necessary since "no radius" is "-".
     $radius = (!is_numeric($this->value['distance']['from'])) ? NULL : $this->value['distance']['from'];
     if ($this->options['radius_type'] == 'textfield' && is_numeric($this->options['radius_units'])) {
       $radius *= $this->options['radius_units'];
     }
-    $location_options[] = array(
+    $location_options[] = [
       'field' => $this->realField,
       'lat' => $location[0],
       'lon' => $location[1],
       'radius' => $radius,
-    );
+    ];
     $query->setOption('search_api_location', $location_options);
   }
 

@@ -35,7 +35,7 @@ class LocationInputPluginManager extends DefaultPluginManager {
    */
   public function getInstances() {
     if (!isset($this->locationInputMethods)) {
-      $this->locationInputMethods = array();
+      $this->locationInputMethods = [];
 
       foreach ($this->getDefinitions() as $name => $data_type_definition) {
         if (class_exists($data_type_definition['class']) && empty($this->locationInputMethods[$name])) {
