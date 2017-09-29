@@ -13,7 +13,7 @@ abstract class LocationInputPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public function hasInput($input, array $options) {
+  public function hasInput(array $input, array $options) {
     $input['value'] = trim($input['value']);
     if (!$input['value'] || !($options['operator'] || is_numeric($options['distance']['from']))) {
       return FALSE;
@@ -68,7 +68,7 @@ abstract class LocationInputPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public function getForm(array $form, FormStateInterface $form_state, $options) {
+  public function getForm(array $form, FormStateInterface $form_state, array $options) {
 
     $distance_options = [];
     $lines = array_filter(array_map('rtrim', explode("\n", $options['radius_options'])));
