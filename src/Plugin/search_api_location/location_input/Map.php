@@ -19,7 +19,7 @@ class Map extends LocationInputPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function hasInput($input, array $options) {
+  public function hasInput(array $input, array $options) {
     return ($input['lat'] && $input['lng']);
   }
 
@@ -83,7 +83,7 @@ class Map extends LocationInputPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getForm(array $form, FormStateInterface $form_state, $options) {
+  public function getForm(array $form, FormStateInterface $form_state, array $options) {
 
     $form['value']['#tree'] = TRUE;
 
