@@ -16,6 +16,6 @@
   },
   "license": "GPL-2.0+",
   "require": {
-    "phayes/geophp": "dev-master"
+    "phayes/geophp": "^1.2"
   }
 }
