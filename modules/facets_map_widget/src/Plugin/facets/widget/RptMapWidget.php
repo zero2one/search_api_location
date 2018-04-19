@@ -52,8 +52,8 @@ class RptMapWidget extends WidgetPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function getQueryType(array $query_types) {
-    return $query_types['rpt'];
+  public function getQueryType() {
+    return 'search_api_rpt';
   }
 
 }

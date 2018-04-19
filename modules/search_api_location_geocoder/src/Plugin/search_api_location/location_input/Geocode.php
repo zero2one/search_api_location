@@ -3,8 +3,11 @@
 namespace Drupal\search_api_location_geocoder\Plugin\search_api_location\location_input;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\geocoder\Geocoder;
 use Drupal\search_api_location\LocationInput\LocationInputPluginBase;
 use Drupal\Component\Utility\SortArray;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Represents the Raw Location Input.
@@ -15,7 +18,38 @@ use Drupal\Component\Utility\SortArray;
  *   description = @Translation("Let user enter an address that will be geocoded."),
  * )
  */
-class Geocode extends LocationInputPluginBase {
+class Geocode extends LocationInputPluginBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The geocoder service.
+   *
+   * @var \Drupal\geocoder\Geocoder
+   */
+  protected $geocoder;
+
+  /**
+   * Constructs a Geocode Location input Plugin.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\geocoder\Geocoder $geocoder
+   *   The geocoder service.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Geocoder $geocoder) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->geocoder = $geocoder;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static($configuration, $plugin_id, $plugin_definition, $container->get('geocoder'));
+  }
 
   /**
    * {@inheritdoc}
@@ -27,7 +61,7 @@ class Geocode extends LocationInputPluginBase {
     else {
       $active_plugins = $this->getActivePlugins();
       /** @var \Geocoder\Model\AddressCollection $geocoded_addresses */
-      $geocoded_addresses = \Drupal::service('geocoder')
+      $geocoded_addresses = $this->geocoder
         ->geocode($input['value'], $active_plugins);
       if ($geocoded_addresses) {
         return $geocoded_addresses->first()

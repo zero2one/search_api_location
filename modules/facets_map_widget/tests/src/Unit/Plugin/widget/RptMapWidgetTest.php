@@ -17,16 +17,15 @@ class RptMapWidgetTest extends WidgetTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->queryTypes['rpt'] = 'rpt';
-    $this->widget = new RptMapWidget();
+    $this->widget = new RptMapWidget([], 'rpt_map_widget', []);
   }
 
   /**
    * {@inheritdoc}
    */
   public function testGetQueryType() {
-    $result = $this->widget->getQueryType($this->queryTypes);
-    $this->assertEquals('rpt', $result);
+    $result = $this->widget->getQueryType();
+    $this->assertEquals('search_api_rpt', $result);
   }
 
   /**

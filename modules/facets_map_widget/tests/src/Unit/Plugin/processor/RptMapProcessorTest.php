@@ -6,7 +6,7 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\Core\Url;
-use Drupal\facets\Entity\Facet;
+use Drupal\facets\FacetInterface;
 use Drupal\facets\Plugin\facets\processor\UrlProcessorHandler;
 use Drupal\facets\Plugin\facets\url_processor\QueryString;
 use Drupal\facets\Result\Result;
@@ -54,48 +54,52 @@ class RptMapProcessorTest extends UnitTestCase {
     $urlHandler = $this->prophesize(UrlProcessorHandler::class);
     $urlHandler->getProcessor()->willReturn($queryString->reveal());
 
-    $facet = $this->prophesize(Facet::class);
+    $facet = $this->prophesize(FacetInterface::class);
     $facet->getProcessors()->willReturn(['url_processor_handler' => $urlHandler->reveal()]);
     $facet->getUrlAlias()->willReturn('animals');
 
     /** @var \Drupal\facets\Result\ResultInterface[] $results */
     $results = [
-      new Result([
-        "gridLevel",
-        2,
-        "columns",
-        32,
-        "rows",
-        32,
-        "minX",
-        -180,
-        "maxX",
-        180,
-        "minY",
-        -90,
-        "maxY",
-        90,
-        "counts_ints2D",
-      ],
+      new Result(
+        $facet->reveal(),
+        [
+          "gridLevel",
+          2,
+          "columns",
+          32,
+          "rows",
+          32,
+          "minX",
+          -180,
+          "maxX",
+          180,
+          "minY",
+          -90,
+          "maxY",
+          90,
+          "counts_ints2D",
+        ],
         'heatmap',
         1),
-      new Result([
-        "gridLevel",
-        2,
-        "columns",
-        32,
-        "rows",
-        32,
-        "minX",
-        -180,
-        "maxX",
-        180,
-        "minY",
-        -90,
-        "maxY",
-        90,
-        "counts_ints2D",
-      ],
+      new Result(
+        $facet->reveal(),
+        [
+          "gridLevel",
+          2,
+          "columns",
+          32,
+          "rows",
+          32,
+          "minX",
+          -180,
+          "maxX",
+          180,
+          "minY",
+          -90,
+          "maxY",
+          90,
+          "counts_ints2D",
+        ],
         'heatmap',
         1),
     ];

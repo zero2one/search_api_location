@@ -12,9 +12,7 @@ use Drupal\KernelTests\KernelTestBase;
 class LocationDataTypeTest extends KernelTestBase {
 
   /**
-   * Modules to enable for this test.
-   *
-   * @var string[]
+   * {@inheritdoc}
    */
   public static $modules = [
     'user',

@@ -3,6 +3,9 @@
 namespace Drupal\Tests\search_api_location_geocoder\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
+use Geocoder\Model\Address;
+use Geocoder\Model\AddressCollection;
+use Geocoder\Model\Coordinates;
 
 /**
  * Test for the geocode plugin.
@@ -36,9 +39,25 @@ class GeocodeTest extends KernelTestBase {
   public function setUp() {
     parent::setUp();
 
+    $ghent = new AddressCollection([new Address(new Coordinates(51.037455, 3.7192784))]);
+
+    // Mock the Geocoder service.
+    $geocoder = $this->getMockBuilder('\Drupal\geocoder\Geocoder')
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $geocoder->expects($this->any())
+      ->method('geocode')
+      ->with('Ghent')
+      ->willReturn($ghent);
+
+    // Replace the geocoder service.
+    $this->container->set('geocoder', $geocoder);
+    \Drupal::setContainer($this->container);
+
     $configuration = [
       'plugins' => [
-        'arcgisonline' => [
+        'openstreetmap' => [
           'checked' => TRUE,
           'weight' => '-3',
         ],
@@ -73,6 +92,17 @@ class GeocodeTest extends KernelTestBase {
    */
   public function testWithUnexpectedInput() {
     $input = ['animal' => 'llama'];
+    $this->setExpectedException(\InvalidArgumentException::class);
+    $this->sut->getParsedInput($input);
+  }
+
+  /**
+   * Tests with non array input.
+   *
+   * @covers ::getParsedInput
+   */
+  public function testWithNonArrayInput() {
+    $input = ['llama'];
     $this->setExpectedException(\InvalidArgumentException::class);
     $this->sut->getParsedInput($input);
   }

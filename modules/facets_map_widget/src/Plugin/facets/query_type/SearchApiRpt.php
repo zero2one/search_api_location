@@ -60,7 +60,6 @@ class SearchApiRpt extends QueryTypePluginBase {
    * {@inheritdoc}
    */
   public function build() {
-
     $query_operator = $this->facet->getQueryOperator();
     if (empty($this->results)) {
       return $this->facet;
@@ -70,7 +69,7 @@ class SearchApiRpt extends QueryTypePluginBase {
     foreach ($this->results as $key => $result) {
       if ($result['count'] || $query_operator == 'or') {
         $count = $result['count'];
-        $result = new Result($result['filter'], "heatmap", $count);
+        $result = new Result($this->facet, $result['filter'], "heatmap", $count);
         $facet_results[] = $result;
       }
     }
