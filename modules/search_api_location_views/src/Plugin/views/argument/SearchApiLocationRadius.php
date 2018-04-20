@@ -25,9 +25,9 @@ class SearchApiLocationRadius extends ArgumentPluginBase {
     if (is_numeric($this->argument) && $this->argument > 0) {
       $query = $this->getQuery();
       $location_options = (array) $query->getOption('search_api_location');
-      $add_options = array(
+      $add_options = [
         'radius' => $this->argument,
-      );
+      ];
       $this->addFieldOptions($location_options, $add_options, $this->realField);
       $query->setOption('search_api_location', $location_options);
     }

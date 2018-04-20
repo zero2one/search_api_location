@@ -50,7 +50,7 @@ abstract class LocationInputPluginBase extends ConfigurablePluginBase implements
       ],
     ];
 
-    $form['radius_units'] = array(
+    $form['radius_units'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Distance conversion factor'),
       '#description' => $this->t('Enter the conversion factor from the expected unit of the user input to kilometers. E.g., miles would have a factor of 1.60935.'),
@@ -60,7 +60,7 @@ abstract class LocationInputPluginBase extends ConfigurablePluginBase implements
           'select[name="options[plugin-' . $this->pluginId . '][radius_type]"]' => ['value' => 'textfield'],
         ],
       ],
-    );
+    ];
 
     return $form;
   }

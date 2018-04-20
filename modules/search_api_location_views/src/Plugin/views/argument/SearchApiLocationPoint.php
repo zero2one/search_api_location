@@ -34,21 +34,21 @@ class SearchApiLocationPoint extends ArgumentPluginBase {
    * {@inheritdoc}
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
-    $form['default_radius'] = array(
+    $form['default_radius'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Provide radius default'),
       '#description' => $this->t('Set a default radius for this contextual filter. Even if set, the radius can be overridden with the corresponding "Radius" contextual filter.'),
       '#default_value' => $this->options['default_radius'],
-    );
+    ];
     $states['visible'][':input[name="options[default_radius]"]']['checked'] = TRUE;
-    $form['radius'] = array(
+    $form['radius'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Radius'),
       '#description' => $this->t('The radius (in km) around the argument point to set the distance filter.'),
       '#required' => TRUE,
       '#default_value' => $this->options['radius'],
       '#states' => $states,
-    );
+    ];
 
     parent::buildOptionsForm($form, $form_state);
   }
@@ -91,7 +91,7 @@ class SearchApiLocationPoint extends ArgumentPluginBase {
    *   if the format was not recognized.
    */
   protected function parsePoint($argument) {
-    $point = array();
+    $point = [];
 
     if (class_exists(\geoPHP::class)) {
       // Try to use geoPHP to read type.
@@ -100,7 +100,7 @@ class SearchApiLocationPoint extends ArgumentPluginBase {
         if ($format) {
           $args = explode(':', $format);
           array_unshift($args, $argument);
-          $location = call_user_func_array(array('geoPHP', 'load'), $args);
+          $location = call_user_func_array(['geoPHP', 'load'], $args);
           $point['lat'] = $location->y();
           $point['lon'] = $location->x();
         }

@@ -28,7 +28,6 @@ trait SearchApiLocationArgumentTrait {
     // Field not yet in options, create new element.
     $add_options['field'] = $field;
     $original_options[] = $add_options;
-    return;
   }
 
 }
