@@ -73,9 +73,17 @@ class SearchApiFilterLocation extends FilterPluginBase {
       $options["plugin-$id"]['default'] = [];
     }
 
-    $options['radius_type']['default'] = 'select';
-    $options['radius_options']['default'] = "- -\n5 5 km\n10 10 km\n16.09 10 mi";
-    $options['radius_units']['default'] = '1';
+    $options['value'] = [
+      'contains' => [
+        'value' => ['default' => ''],
+        'distance' => [
+          'contains' => [
+            'from' => ['default' => ''],
+            'to' => ['default' => ''],
+          ],
+        ],
+      ],
+    ];
 
     return $options;
   }
@@ -102,7 +110,9 @@ class SearchApiFilterLocation extends FilterPluginBase {
     ];
 
     foreach ($this->locationInputManager->getDefinitions() as $id => $plugin) {
-      $plugin = $this->locationInputManager->createInstance($id, $this->options['plugin-' . $id]);
+      $settings = !empty($this->options['plugin-' . $id]) ? $this->options['plugin-' . $id] : [];
+
+      $plugin = $this->locationInputManager->createInstance($id, $settings);
       $form["plugin-$id"] = [
         '#type' => 'fieldset',
         '#title' => $plugin->getDescription(),
@@ -137,17 +147,14 @@ class SearchApiFilterLocation extends FilterPluginBase {
   /**
    * {@inheritdoc}
    */
-  protected function operatorForm(&$form, FormStateInterface $form_state) {
-    $form['operator'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Location'),
-      '#options' => [
-        '<' => 'within',
-        '<>' => 'between',
-        '>' => 'outside of',
-      ],
+  public function operatorOptions() {
+    $options = [
+      '<' => t('less than'),
+      'between' => t('between'),
+      '>' => t('more than'),
     ];
-    $form['operator']['#default_value'] = $this->operator;
+
+    return $options;
   }
 
   /**
@@ -156,10 +163,14 @@ class SearchApiFilterLocation extends FilterPluginBase {
   protected function valueForm(&$form, FormStateInterface $form_state) {
     $plugin_id = $this->options['plugin'];
 
+    if (!$plugin_id) {
+      return;
+    }
+
     /** @var \Drupal\search_api_location\LocationInput\LocationInputInterface $plugin */
     $plugin = $this->locationInputManager->createInstance($plugin_id, $this->options['plugin-' . $plugin_id]);
 
-    $form = $plugin->getForm($form, $form_state, $this->options);
+    $form = $plugin->getForm($form, $form_state, $this->options + ['operator_options' => $this->operatorOptions()]);
   }
 
   /**
@@ -167,8 +178,15 @@ class SearchApiFilterLocation extends FilterPluginBase {
    */
   public function query() {
     $plugin_id = $this->options['plugin'];
+
+    if (!$plugin_id) {
+      return;
+    }
+
+    $plugin_options = $this->options['plugin-' . $plugin_id];
+
     /** @var \Drupal\search_api_location\LocationInput\LocationInputInterface $plugin */
-    $plugin = $this->locationInputManager->createInstance($this->options['plugin'], $this->options['plugin-' . $plugin_id]);
+    $plugin = $this->locationInputManager->createInstance($plugin_id, $plugin_options);
 
     if (!$plugin->hasInput($this->value, $this->options)) {
       return;
@@ -186,8 +204,11 @@ class SearchApiFilterLocation extends FilterPluginBase {
     $location_options = (array) $query->getOption('search_api_location', []);
     // If the radius isn't numeric omit it. Necessary since "no radius" is "-".
     $radius = (!is_numeric($this->value['distance']['from'])) ? NULL : $this->value['distance']['from'];
-    if ($this->options['radius_type'] == 'textfield' && is_numeric($this->options['radius_units'])) {
-      $radius *= $this->options['radius_units'];
+    if ($plugin_options['radius_type'] == 'textfield') {
+      $units = array_column(search_api_location_get_units(), 'multiplier', 'id');
+      $multiplier = $units[$plugin_options['radius_units']];
+
+      $radius *= $multiplier;
     }
     $location_options[] = [
       'field' => $this->realField,

@@ -55,7 +55,7 @@ class Geocode extends LocationInputPluginBase implements ContainerFactoryPluginI
    * {@inheritdoc}
    */
   public function getParsedInput(array $input) {
-    if (!isset($input['value'])) {
+    if (empty($input['value'])) {
       throw new \InvalidArgumentException('Input doesn\'t contain a location value.');
     }
     else {
@@ -93,9 +93,17 @@ class Geocode extends LocationInputPluginBase implements ContainerFactoryPluginI
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return [
-      'plugins' => [],
-    ];
+    $configuration = parent::defaultConfiguration();
+    $configuration['plugins'] = [];
+
+    $geocoderpluginmanager = \Drupal::service('plugin.manager.geocoder.provider');
+
+    foreach ($geocoderpluginmanager->getPluginsAsOptions() as $plugin_id => $plugin_name) {
+      $configuration['plugins'][$plugin_id]['checked'] = 0;
+      $configuration['plugins'][$plugin_id]['weight'] = 0;
+    }
+
+    return $configuration;
   }
 
   /**

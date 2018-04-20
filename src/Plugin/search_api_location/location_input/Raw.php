@@ -20,7 +20,7 @@ class Raw extends LocationInputPluginBase {
    * {@inheritdoc}
    */
   public function getParsedInput(array $input) {
-    if (!isset($input['value'])) {
+    if (empty($input['value'])) {
       throw new \InvalidArgumentException('Input doesn\'t contain a location value.');
     }
 

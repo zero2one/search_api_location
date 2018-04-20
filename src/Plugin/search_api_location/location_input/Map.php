@@ -36,6 +36,23 @@ class Map extends LocationInputPluginBase {
   /**
    * {@inheritdoc}
    */
+  public function defaultConfiguration() {
+    $configuration = parent::defaultConfiguration();
+
+    $configuration += [
+      'radius_border_color' => '',
+      'radius_border_weight' => '',
+      'radius_background_color' => '',
+      'radius_background_transparency' => '',
+      'marker_image' => '',
+    ];
+
+    return $configuration;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 
     $form['radius_border_color'] = [

@@ -15,11 +15,26 @@ abstract class LocationInputPluginBase extends ConfigurablePluginBase implements
    */
   public function hasInput(array $input, array $options) {
     $input['value'] = trim($input['value']);
-    if (!$input['value'] || !($options['operator'] || is_numeric($options['distance']['from']))) {
+    if (!$input['value'] || !($options['operator'] || is_numeric($input['distance']['from']))) {
       return FALSE;
     }
 
     return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function defaultConfiguration() {
+    $configuration = parent::defaultConfiguration();
+
+    $configuration += [
+      'radius_type' => 'select',
+      'radius_options' => "- -\n5 5 km\n10 10 km\n16.09 10 mi",
+      'radius_units' => 'km',
+    ];
+
+    return $configuration;
   }
 
   /**
@@ -51,10 +66,11 @@ abstract class LocationInputPluginBase extends ConfigurablePluginBase implements
     ];
 
     $form['radius_units'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Distance conversion factor'),
-      '#description' => $this->t('Enter the conversion factor from the expected unit of the user input to kilometers. E.g., miles would have a factor of 1.60935.'),
+      '#type' => 'select',
+      '#title' => $this->t('Distance units'),
+      '#description' => $this->t('Choose the units for the distance.'),
       '#default_value' => $this->configuration['radius_units'],
+      '#options' => array_column(search_api_location_get_units(), 'label', 'id'),
       '#states' => [
         'visible' => [
           'select[name="options[plugin-' . $this->pluginId . '][radius_type]"]' => ['value' => 'textfield'],
@@ -69,52 +85,91 @@ abstract class LocationInputPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function getForm(array $form, FormStateInterface $form_state, array $options) {
+    $plugin_settings = $options['plugin-' . $options['plugin']];
 
-    $distance_options = [];
-    $lines = array_filter(array_map('rtrim', explode("\n", $options['radius_options'])));
-    foreach ($lines as $line) {
-      $pos = strpos($line, ' ');
-      $range = substr($line, 0, $pos);
-      $distance_options[$range] = trim(substr($line, $pos + 1));
+    $is_views_ui_form = ($form_state->getBuildInfo()['form_id'] == 'views_ui_config_item_form');
+    $operator_prefix = '';
+
+    if ($is_views_ui_form) {
+      $states_selector = 'input[name="options[operator]"]';
+    }
+    else {
+      $states_selector = 'select[name="' . $options['expose']['operator_id'] . '"]';
+    }
+    if (!$is_views_ui_form && !($options['exposed'] && $options['expose']['use_operator'])) {
+      $operator_prefix = $options['operator_options'][$options['operator']] . '&nbsp;';
     }
 
     $form['value']['#tree'] = TRUE;
 
-    $value_prefix = 'of&nbsp;';
-    $distance_prefix = '';
+    if ($plugin_settings['radius_type'] == 'select') {
+      $distance_options = [];
+      $lines = array_filter(array_map('trim', explode("\n", $plugin_settings['radius_options'])));
+      foreach ($lines as $line) {
+        $pos = strpos($line, ' ');
+        $range = substr($line, 0, $pos);
+        $distance_options[$range] = trim(substr($line, $pos + 1));
+      }
 
-    if (!$options['expose']['use_operator']) {
-      $distance_prefix = 'within&nbsp;';
-    }
-
-    $form['value']['distance']['from'] = [
-      '#title' => '&nbsp;',
-      '#type' => 'select',
-      '#options' => $distance_options,
-      '#field_prefix' => $distance_prefix,
-    ];
-
-    if ($options['expose']['use_operator'] || (!$options['expose']['use_operator'] && $options['operator'] == '<>')) {
-      $form['value']['distance']['to'] = [
-        '#title' => '&nbsp;',
+      $form['value']['distance']['from'] = [
         '#type' => 'select',
+        '#title' => '&nbsp;',
         '#options' => $distance_options,
-        '#field_prefix' => 'and&nbsp;',
+        '#default_value' => $options['value']['distance']['from'],
+        '#field_prefix' => $operator_prefix,
       ];
-    }
-    if ($options['expose']['use_operator']) {
-      $form['value']['distance']['to']['#states'] = [
-        'visible' => [
-          'select[name="latlon_op"]' => ['value' => '<>'],
+
+      $form['value']['distance']['to'] = [
+        '#type' => 'select',
+        '#title' => '&nbsp;',
+        '#options' => $distance_options,
+
+        '#default_value' => $options['value']['distance']['to'],
+        '#field_prefix' => 'and&nbsp;',
+        '#states' => [
+          'visible' => [
+            $states_selector => ['value' => 'between'],
+          ],
         ],
       ];
+    }
+    elseif ($plugin_settings['radius_type'] == 'textfield') {
+      $distance_suffix = $plugin_settings['radius_units'];
+
+      $form['value']['distance']['from'] = [
+        '#type' => 'textfield',
+        '#title' => '&nbsp;',
+        '#size' => 5,
+        '#default_value' => $options['value']['distance']['from'],
+        '#field_prefix' => $operator_prefix,
+        '#field_suffix' => $distance_suffix,
+      ];
+
+      $form['value']['distance']['to'] = [
+        '#title' => '&nbsp;',
+        '#type' => 'textfield',
+        '#size' => 5,
+        '#default_value' => $options['value']['distance']['to'],
+        '#field_prefix' => 'and&nbsp;',
+        '#field_suffix' => $distance_suffix,
+        '#states' => [
+          'visible' => [
+            $states_selector => ['value' => 'between'],
+          ],
+        ],
+      ];
+    }
+
+    if (!$is_views_ui_form && !($options['exposed'] && $options['expose']['use_operator']) && $options['operator'] != 'between') {
+      unset($form['value']['distance']['to']);
     }
 
     $form['value']['value'] = [
       '#type' => 'textfield',
       '#title' => '&nbsp;',
-      '#field_prefix' => $value_prefix,
       '#size' => 20,
+      '#default_value' => $options['value']['value'],
+      '#field_prefix' => 'from&nbsp;',
     ];
 
     return $form;
