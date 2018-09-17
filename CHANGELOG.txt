@@ -1,5 +1,5 @@
-Search API Location 2.x, dev (xxxx-xx-xx):
-------------------------------------------
+Search API Location 2.0 (2018-09-17):
+-------------------------------------
 - #1723762 by drunken monkey: Added support for the Location module.
 - #2854886 by tameeshb: Fixed a typo.
 - #2854882 by dbjpanda: Fixed a typo.
