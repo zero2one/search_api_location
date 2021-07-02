@@ -3,8 +3,11 @@
 namespace Drupal\search_api_location_geocoder\Plugin\search_api_location\location_input;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\geocoder\Entity\GeocoderProvider;
 use Drupal\geocoder\Geocoder;
 use Drupal\search_api_location\LocationInput\LocationInputPluginBase;
 use Drupal\Component\Utility\SortArray;
@@ -36,6 +39,13 @@ class Geocode extends LocationInputPluginBase implements ContainerFactoryPluginI
   protected $geocoderConfig;
 
   /**
+   * Entity Type Manager
+   *
+   * @var EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * Constructs a Geocode Location input Plugin.
    *
    * @param array $configuration
@@ -48,38 +58,44 @@ class Geocode extends LocationInputPluginBase implements ContainerFactoryPluginI
    *   The geocoder service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   A config factory for retrieving required config objects.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The Entity Type Manager for loading the providers.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, Geocoder $geocoder, ConfigFactoryInterface $config_factory) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Geocoder $geocoder, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->geocoder = $geocoder;
     $this->geocoderConfig = $config_factory->get('geocoder.settings');
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static($configuration, $plugin_id, $plugin_definition, $container->get('geocoder'), $container->get('config.factory'));
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('geocoder'),
+      $container->get('config.factory'),
+      $container->get('entity_type.manager')
+    );
   }
 
   /**
    * {@inheritdoc}
    */
   public function getParsedInput(array $input) {
-    if (empty($input['value'])) {
-      throw new \InvalidArgumentException('Input doesn\'t contain a location value.');
-    }
-    else {
-      $active_plugins = $this->getActivePlugins();
-      $plugin_options = (array) $this->geocoderConfig->get('plugins_options');
+    if (!empty($input['value'])) {
+      $providers = $this->getEnabledProviders();
 
-      /** @var \Geocoder\Model\AddressCollection $geocoded_addresses */
-      $geocoded_addresses = $this->geocoder
-        ->geocode($input['value'], $active_plugins, $plugin_options);
+      $geocoded_addresses = $this->geocoder->geocode($input['value'], $providers);
       if ($geocoded_addresses) {
-        return $geocoded_addresses->first()
-          ->getLatitude() . ',' . $geocoded_addresses->first()
-          ->getLongitude();
+        $coordinates = $geocoded_addresses->first()->getCoordinates();
+        return $coordinates->getLatitude() . ',' . $coordinates->getLongitude();
+      }
+      else {
+        throw new \InvalidArgumentException('Input doesn\'t contain a location value.');
       }
     }
     return NULL;
@@ -88,17 +104,28 @@ class Geocode extends LocationInputPluginBase implements ContainerFactoryPluginI
   /**
    * Gets the active geocoder plugins.
    */
-  protected function getActivePlugins() {
-    $plugins = $this->configuration['plugins'];
-    uasort($plugins, [SortArray::class, 'sortByWeightProperty']);
+  protected function getEnabledProviders() {
+    // Get the current selected providers
+    $selected_providers = $this->configuration['plugins'];
 
-    $active_plugins = [];
-    foreach ($plugins as $id => $plugin) {
-      if ($plugin['checked']) {
-        $active_plugins[$id] = $id;
+    // Load all the providers
+    $geocoderProviders = $this->entityTypeManager->getStorage('geocoder_provider')->loadMultiple();
+
+    // Filter out all providers that are disabled.
+    $providers = array_filter($geocoderProviders, function (GeocoderProvider $provider) use ($selected_providers): bool {
+      return !empty($selected_providers[$provider->id()]) && $selected_providers[$provider->id()]['checked'] == TRUE;
+    });
+
+    // Sort providers according to weight.
+    uasort($providers, function (GeocoderProvider $a, GeocoderProvider $b) use ($selected_providers): int {
+      if ((int) $selected_providers[$a->id()]['weight'] === (int) $selected_providers[$b->id()]['weight']) {
+        return 0;
       }
-    }
-    return $active_plugins;
+
+      return (int) $selected_providers[$a->id()]['weight'] < (int) $selected_providers[$b->id()]['weight'] ? -1 : 1;
+    });
+
+    return $providers;
   }
 
   /**
