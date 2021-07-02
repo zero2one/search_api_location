@@ -15,7 +15,7 @@ class RawTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'user',
     'search_api',
     'search_api_location',
@@ -31,7 +31,7 @@ class RawTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp():void {
     parent::setUp();
 
     $this->sut = $this->container
