@@ -5,6 +5,7 @@ namespace Drupal\Tests\search_api_location_geocoder\Kernel;
 use Drupal\KernelTests\KernelTestBase;
 use Geocoder\Model\Address;
 use Geocoder\Model\AddressCollection;
+use Geocoder\Model\AdminLevelCollection;
 use Geocoder\Model\Coordinates;
 
 /**
@@ -18,7 +19,7 @@ class GeocodeTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'user',
     'search_api',
     'search_api_location',
@@ -36,10 +37,10 @@ class GeocodeTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp():void {
     parent::setUp();
 
-    $ghent = new AddressCollection([new Address(new Coordinates(51.037455, 3.7192784))]);
+    $ghent = new AddressCollection([new Address('random', new AdminLevelCollection([]), new Coordinates(51.037455, 3.7192784))]);
 
     // Mock the Geocoder service.
     $geocoder = $this->getMockBuilder('\Drupal\geocoder\Geocoder')
@@ -91,8 +92,8 @@ class GeocodeTest extends KernelTestBase {
    * @covers ::getParsedInput
    */
   public function testWithUnexpectedInput() {
-    $input = ['animal' => 'llama'];
-    $this->expectException(\InvalidArgumentException::class);
+    $input = ['value' => ['animal' => 'llama']];
+    $this->expectException(\TypeError::class);
     $this->sut->getParsedInput($input);
   }
 
@@ -102,8 +103,8 @@ class GeocodeTest extends KernelTestBase {
    * @covers ::getParsedInput
    */
   public function testWithNonArrayInput() {
-    $input = ['llama'];
-    $this->expectException(\InvalidArgumentException::class);
+    $input = ['value' => ['llama']];
+    $this->expectException(\TypeError::class);
     $this->sut->getParsedInput($input);
   }
 
