@@ -16,6 +16,11 @@
   },
   "license": "GPL-2.0+",
   "require": {
-    "phayes/geophp": "^1.2"
+    "phayes/geophp": "^1.2",
+    "drupal/search_api": "^1.19"
+  },
+  "require-dev": {
+    "drupal/facets": "^1.8",
+    "drupal/geocoder": "^3.0"
   }
 }
