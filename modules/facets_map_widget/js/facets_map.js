@@ -55,7 +55,7 @@
             maxClusterRadius: 140
           });
           $.each(_this.facetHeatmap.counts_ints2D, function (row, value) {
-            if (value === null) {
+            if (value === NULL) {
               return;
             }
 
@@ -127,13 +127,13 @@
        */
       if (typeof L.MarkerCluster !== 'undefined') {
         L.MarkerCluster.prototype.initialize = function (group, zoom, a, b) {
-          L.Marker.prototype.initialize.call(this, a ? (a._cLatLng || a.getLatLng()) : new L.LatLng(0, 0), {icon: this});
+          L.Marker.prototype.initialize.call(this, a ? (a._cLatLng || a.getLatLng()) : new L.LatLng(0, 0), {icon : this});
           this._group = group;
           this._zoom = zoom;
           this._markers = [];
           this._childClusters = [];
           this._childCount = 0;
-          this._iconNeedsUpdate = true;
+          this._iconNeedsUpdate = TRUE;
           this._bounds = new L.LatLngBounds();
           if (a) {
             this._addChild(a);

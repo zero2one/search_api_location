@@ -149,9 +149,9 @@ class SearchApiFilterLocation extends FilterPluginBase {
    */
   public function operatorOptions() {
     $options = [
-      '<' => t('less than'),
-      'between' => t('between'),
-      '>' => t('more than'),
+      '<' => $this->t('less than'),
+      'between' => $this->t('between'),
+      '>' => $this->t('more than'),
     ];
 
     return $options;

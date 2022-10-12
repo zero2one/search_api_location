@@ -78,7 +78,7 @@ class GeocodeTest extends KernelTestBase {
   public function testGetParsedInput() {
     $input['value'] = 'Ghent';
     $parsed = $this->sut->getParsedInput($input);
-    list($lat, $lng) = explode(',', $parsed);
+    [$lat, $lng] = explode(',', $parsed);
     $this->assertEquals(round($lat, 0, PHP_ROUND_HALF_DOWN), 51);
     $this->assertEquals(round($lng, 0, PHP_ROUND_HALF_DOWN), 4);
   }

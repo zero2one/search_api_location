@@ -15,7 +15,6 @@
       var myOptions;
       var singleClick;
 
-
       Drupal.behaviors.facetsIndexFormatter = {
         attach: function (context, settings) {
           geocoder = new google.maps.Geocoder();
@@ -33,7 +32,7 @@
        * @param op
        *   the op that was performed
        */
-      searchapilocation.codeLatLng = function(latLng, i, op) {
+      searchapilocation.codeLatLng = function (latLng, i, op) {
 
         // Update the lat and lng input fields
         $('#sal-' + i + '-lat').val(latLng.lat());
@@ -42,7 +41,7 @@
         // Update the address field
         if ((op == 'marker' || op == 'geocoder') && geocoder) {
 
-          geocoder.geocode({ 'latLng' : latLng }, function(results, status) {
+          geocoder.geocode({ 'latLng' : latLng }, function (results, status) {
 
             if (status == google.maps.GeocoderStatus.OK) {
               $("#" + i + "-address").val(results[0].formatted_address);
@@ -63,10 +62,10 @@
        * @param i
        *   the index from the maps array we are working on
        */
-      searchapilocation.codeAddress = function(i) {
+      searchapilocation.codeAddress = function (i) {
         var address = $("#" + i + "-address").val();
 
-        geocoder.geocode( { 'address': address }, function(results, status) {
+        geocoder.geocode( { 'address': address }, function (results, status) {
           if (status == google.maps.GeocoderStatus.OK) {
             searchapilocation.maps[i].setCenter(results[0].geometry.location);
             searchapilocation.setMapMarker(results[0].geometry.location, i);
@@ -85,17 +84,17 @@
        * @param i
        *   the index from the maps array we are working on
        */
-      searchapilocation.setMapMarker = function(latLng, i) {
+      searchapilocation.setMapMarker = function (latLng, i) {
         // remove old marker and circle
         if (searchapilocation.markers[i]) {
-          searchapilocation.markers[i].setMap(null);
-          searchapilocation.circles[i].setMap(null);
+          searchapilocation.markers[i].setMap(NULL);
+          searchapilocation.circles[i].setMap(NULL);
         }
 
         // add marker
         searchapilocation.markers[i] = new google.maps.Marker({
           map: searchapilocation.maps[i],
-          draggable: true,
+          draggable: TRUE,
           animation: google.maps.Animation.DROP,
           position: latLng,
           icon: searchapilocation.config[i].marker_image
@@ -104,7 +103,7 @@
         // Add circle.
         searchapilocation.circles[i] = new google.maps.Circle({
           map: searchapilocation.maps[i],
-          clickable:false,
+          clickable:FALSE,
           strokeColor: searchapilocation.config[i].radius_border_color,
           strokeWeight: searchapilocation.config[i].radius_border_weight,
           fillColor: searchapilocation.config[i].radius_background_color,
@@ -116,13 +115,13 @@
         // fit the map to te circle
         searchapilocation.maps[i].fitBounds(searchapilocation.circles[i].getBounds());
 
-        return false; // if called from <a>-Tag
+        return FALSE; // if called from <a>-Tag
       };
 
       // Work on each map
-      $.each(drupalSettings.search_api_location, function(i, search_api_location_map) {
+      $.each(drupalSettings.search_api_location, function (i, search_api_location_map) {
 
-        $("#sal-" + i + '-map').once('process').each(function(){
+        $("#sal-" + i + '-map').once('process').each(function () {
           searchapilocation.config[i] = search_api_location_map;
 
           lat = parseFloat(search_api_location_map.lat);
@@ -135,7 +134,7 @@
             zoom: 12,
             center: latLng,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
-            scrollwheel: false
+            scrollwheel: FALSE
           };
 
           // Create map
@@ -148,12 +147,12 @@
             max: 5000,
             step: 1,
           //  range: true,
-            slide: function( event, ui ) {
+            slide: function ( event, ui ) {
               $("#sal-" + i + "-radius").val( ui.value );
               searchapilocation.setMapMarker(searchapilocation.markers[i].getPosition(), i);
             },
 
-            stop: function( event, ui ) {
+            stop: function ( event, ui ) {
               $("#sal-" + i + "-radius").val( ui.value );
               $("#sal-" + i + "-slider").closest('form').submit();
             }
@@ -161,19 +160,18 @@
 
           $("#sal-" + i + "-slider").val($("#sal-" + i + "-slider").slider( "value" ) );
 
-
           if (lat && lng) {
             // Set initial marker
             searchapilocation.setMapMarker(latLng, i);
             searchapilocation.codeLatLng(latLng, i, 'geocoder');
           }
 
-          $("#" + i + "-geocode").click(function(e) {
+          $("#" + i + "-geocode").click(function (e) {
             searchapilocation.codeAddress(i);
           });
 
           // trigger on enter key
-          $("#" + i + "-address").keypress(function(ev){
+          $("#" + i + "-address").keypress(function (ev) {
             if(ev.which == 13){
               ev.preventDefault();
               searchapilocation.codeAddress(i);
@@ -181,29 +179,25 @@
           });
 
           // Listener to click
-          google.maps.event.addListener(searchapilocation.maps[i], 'click', function(me){
+          google.maps.event.addListener(searchapilocation.maps[i], 'click', function (me) {
             // Set a timeOut so that it doesn't execute if dbclick is detected
-            singleClick = setTimeout(function(){
+            singleClick = setTimeout(function () {
               searchapilocation.codeLatLng(me.latLng, i, 'marker');
               searchapilocation.setMapMarker(me.latLng, i);
             }, 500);
           });
 
-
           // Detect double click to avoid setting marker
-          google.maps.event.addListener(searchapilocation.maps[i], 'dblclick', function(me){
+          google.maps.event.addListener(searchapilocation.maps[i], 'dblclick', function (me) {
             clearTimeout(singleClick);
           });
 
           // Listener to dragend
-          google.maps.event.addListener(searchapilocation.markers[i], 'dragend', function(me){
+          google.maps.event.addListener(searchapilocation.markers[i], 'dragend', function (me) {
 
             searchapilocation.codeLatLng(me.latLng, i, 'marker');
             searchapilocation.setMapMarker(me.latLng, i);
           });
-
-
-
 
         })
       });
