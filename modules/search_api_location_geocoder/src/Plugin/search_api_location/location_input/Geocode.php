@@ -77,8 +77,8 @@ class Geocode extends LocationInputPluginBase implements ContainerFactoryPluginI
       $geocoded_addresses = $this->geocoder
         ->geocode($input['value'], $active_plugins, $plugin_options);
       if ($geocoded_addresses) {
-        return $geocoded_addresses->first()
-          ->getLatitude() . ',' . $geocoded_addresses->first()
+        return $geocoded_addresses->first()->getCoordinates()
+          ->getLatitude() . ',' . $geocoded_addresses->first()->getCoordinates()
           ->getLongitude();
       }
     }
