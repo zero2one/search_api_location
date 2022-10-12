@@ -18,7 +18,7 @@ class GeocodeTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'user',
     'search_api',
     'search_api_location',
@@ -36,15 +36,13 @@ class GeocodeTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $ghent = new AddressCollection([new Address(new Coordinates(51.037455, 3.7192784))]);
 
     // Mock the Geocoder service.
-    $geocoder = $this->getMockBuilder('\Drupal\geocoder\Geocoder')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $geocoder = $this->createMock('\Drupal\geocoder\Geocoder');
 
     $geocoder->expects($this->any())
       ->method('geocode')

@@ -14,7 +14,7 @@ class LocationDataTypeTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'user',
     'search_api',
     'search_api_location',
