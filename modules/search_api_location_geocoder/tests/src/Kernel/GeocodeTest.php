@@ -37,15 +37,13 @@ class GeocodeTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp():void {
+  public function setUp(): void {
     parent::setUp();
 
     $ghent = new AddressCollection([new Address('random', new AdminLevelCollection([]), new Coordinates(51.037455, 3.7192784))]);
 
     // Mock the Geocoder service.
-    $geocoder = $this->getMockBuilder('\Drupal\geocoder\Geocoder')
-      ->disableOriginalConstructor()
-      ->getMock();
+    $geocoder = $this->createMock('\Drupal\geocoder\Geocoder');
 
     $geocoder->expects($this->any())
       ->method('geocode')
@@ -81,7 +79,7 @@ class GeocodeTest extends KernelTestBase {
   public function testGetParsedInput() {
     $input['value'] = 'Ghent';
     $parsed = $this->sut->getParsedInput($input);
-    list($lat, $lng) = explode(',', $parsed);
+    [$lat, $lng] = explode(',', $parsed);
     $this->assertEquals(round($lat, 0, PHP_ROUND_HALF_DOWN), 51);
     $this->assertEquals(round($lng, 0, PHP_ROUND_HALF_DOWN), 4);
   }

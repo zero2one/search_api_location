@@ -197,7 +197,7 @@ class Geocode extends LocationInputPluginBase implements ContainerFactoryPluginI
    *   The current state of the complete form.
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
-    // TODO: Implement validateConfigurationForm() method.
+    // @todo Implement validateConfigurationForm() method.
   }
 
   /**
@@ -210,7 +210,7 @@ class Geocode extends LocationInputPluginBase implements ContainerFactoryPluginI
    *   The current state of the complete form.
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    // TODO: Implement submitConfigurationForm() method.
+    // @todo Implement submitConfigurationForm() method.
   }
 
 }
